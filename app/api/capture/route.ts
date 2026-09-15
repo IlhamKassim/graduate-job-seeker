@@ -23,6 +23,7 @@ export async function GET(request: Request) {
       persisted: capturePersistence(),
       waitlist: data.waitlist,
       events: data.events,
+      outbound: data.outbound,
     });
   } catch (error) {
     await reportError(error);

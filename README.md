@@ -8,7 +8,7 @@ This is a validation pilot, not a jobs marketplace. It does not apply for you, s
 
 In: profile → eligibility gate + transparent fit → checked-programme shortlist → calendar → waitlist capture (with consent) → session log.
 
-Out until a later phase: accounts, magic-link return visits, scrapers, LLM matching, payments, employer dashboards, a second country as a product, and treating sample records as facts.
+Out until a later phase: full accounts, OAuth, scrapers, LLM matching, payments, employer dashboards, a second country as a product, and treating sample records as facts.
 
 ## SMART for this slice
 
@@ -59,7 +59,15 @@ Set `DATABASE_URL` to a Postgres connection string (Neon on Vercel is the intend
 
 Set `CAPTURE_ADMIN_SECRET` so you can read `/api/capture` (Bearer token, or the Session log page). Public routes do not return emails.
 
-Waitlist POST requires a consent tick, a plausible address, and an empty honeypot field. Events on the server drop email and CGPA. Consent version is `CONSENT_VERSION` in `lib/config.ts` (currently `2026-09-15-v1`). Copy for students is on `/privacy/`.
+Waitlist POST requires a consent tick, a plausible address, and an empty honeypot field. Events on the server drop email and CGPA. Consent version is `CONSENT_VERSION` in `lib/config.ts` (currently `2026-09-15-v2`). Copy for students is on `/privacy/`.
+
+## Return visits
+
+The seven answers still live in the browser. After a consented waitlist join we also store that profile on the server so we can email a copy of the checked shortlist and a one-time link (`/return/<token>/`) that restores those answers on another phone. The email does not include CGPA. The link expires in seven days and cannot be reused.
+
+`/return/` will send another link without saying whether the address is on the list.
+
+Set `RESEND_API_KEY` and `RETURN_FROM_EMAIL` to actually send. Without them, the operator dump at `/api/capture` still stores the outbound body (including the link) so you can forward it during the pilot. A Monday cron at `/api/cron/reminders/` writes when a saved seasonal window is opening soon or in its last month; it needs `CRON_SECRET`. Rolling programmes are skipped so year-round schemes do not spam every week.
 
 ## How to read `/debug` after a session
 
@@ -79,6 +87,7 @@ Events you should expect if the session was used properly:
 | `filter_used` | they toggled a sector, country, window chip, or samples |
 | `calendar_viewed` | they opened `/calendar` |
 | `waitlist_joined` | they left an address on the shortlist |
+| `return_visit` | they opened an emailed shortlist link |
 
 The JSON is the source of truth. The readable list above it is just for scanning.
 

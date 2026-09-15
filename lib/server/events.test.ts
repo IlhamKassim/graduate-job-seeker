@@ -30,6 +30,12 @@ describe('sanitiseEventPayload', () => {
     ).toEqual({ joined: true });
   });
 
+  it('reduces a return visit to a boolean', () => {
+    expect(sanitiseEventPayload('return_visit', { restored: true, email: 'student@example.com' })).toEqual({
+      restored: true,
+    });
+  });
+
   it('strips email and CGPA from every other allowed type', () => {
     const cleaned = sanitiseEventPayload('program_detail_opened', {
       programId: 'cimb-group-the-complete-banker',

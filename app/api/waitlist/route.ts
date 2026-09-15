@@ -6,8 +6,12 @@ import {
   newId,
   validEmail,
 } from '@/lib/server/http';
-import { appendWaitlistRow, capturePersistence, emailAlreadyListed } from '@/lib/server/capture';
+import { capturePersistence, upsertWaitlistRow } from '@/lib/server/capture';
 import { reportError } from '@/lib/server/sentry';
+import { parseProfile, parseProgrammeIds } from '@/lib/profile';
+import { PROGRAMS } from '@/data/programs';
+import { issueReturnLink } from '@/lib/server/return-visit';
+import { publicOrigin } from '@/lib/server/mail';
 
 export const runtime = 'nodejs';
 
@@ -50,16 +54,34 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    if (await emailAlreadyListed(email)) {
-      return Response.json({ ok: true, already: true, persisted: capturePersistence() });
-    }
+  const profile = parseProfile(payload.profile);
+  const programmeIds = parseProgrammeIds(
+    payload.programmeIds,
+    PROGRAMS.map((program) => program.id),
+  );
 
-    await appendWaitlistRow({
+  try {
+    const action = await upsertWaitlistRow({
       id: newId(),
       email,
       at: new Date().toISOString(),
       consentVersion: CONSENT_VERSION,
+      profile,
+      programmeIds,
+      lastRemindedAt: null,
+    });
+
+    let mailed: boolean | null = null;
+    if (profile) {
+      const result = await issueReturnLink(email, publicOrigin(request));
+      mailed = result.delivered;
+    }
+
+    return Response.json({
+      ok: true,
+      already: action === 'updated',
+      mailed,
+      persisted: capturePersistence(),
     });
   } catch (error) {
     await reportError(error);
@@ -68,6 +90,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-
-  return Response.json({ ok: true, persisted: capturePersistence() });
 }

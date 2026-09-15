@@ -288,7 +288,11 @@ export function ShortlistView() {
         </>
       )}
 
-      <EmailCapture />
+      <EmailCapture
+        programmeIds={scored.eligible
+          .filter((entry) => entry.program.dataConfidence === 'verified')
+          .map((entry) => entry.program.id)}
+      />
 
       <IneligibleSection entries={scored.ineligible} />
     </Shell>

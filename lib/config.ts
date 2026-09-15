@@ -10,7 +10,7 @@ export const APP_TAGLINE = 'Graduate programme windows for Malaysia and Singapor
 export const APP_DESCRIPTION =
   'Answer seven questions and see which Malaysian and Singaporean graduate programmes you qualify for, when each one opens, and what each will put you through.';
 
-export const CONSENT_VERSION = '2026-09-15-v1';
+export const CONSENT_VERSION = '2026-09-15-v2';
 
 export const DATA_SLICE = {
   verifiedCount: VERIFIED_COUNT,

@@ -40,6 +40,10 @@ export const TESTID = {
   emailDone: 'email-done',
   emailConsent: 'email-consent',
   filterSamples: 'filter-samples',
+  returnForm: 'return-form',
+  returnEmail: 'return-email',
+  returnSubmit: 'return-submit',
+  returnDone: 'return-done',
 
   stageTimeline: 'stage-timeline',
   stageItem: 'stage-item',
@@ -86,6 +90,7 @@ export const ROUTES = {
   shortlist: '/shortlist/',
   calendar: '/calendar/',
   debug: '/debug/',
+  returnVisit: '/return/',
 };
 
 export const CITIES = ['Kuala Lumpur', 'Penang', 'Johor', 'Kota Kinabalu', 'Singapore'];

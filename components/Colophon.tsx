@@ -12,8 +12,8 @@ export function Colophon() {
               pages
               {DATA_SLICE.checkedOn ? ` on ${DATA_SLICE.checkedOn}` : ''}, plus{' '}
               {DATA_SLICE.sampleCount} sample records kept off the default shortlist. Your
-              profile stays in this browser. A waitlist address is also sent to the server if
-              capture is configured.
+              profile stays in this browser unless you leave an address after a shortlist, in
+              which case we can email a one-time link to restore it.
             </p>
             <p className="mt-3 text-[0.875rem] leading-relaxed text-slate">
               The fit score is a transparent sum of four fixed weights, shown in full on every
@@ -41,6 +41,11 @@ export function Colophon() {
               <li>
                 <Link href="/debug/" className="inline-flex min-h-11 items-center text-slate underline-offset-4 hover:text-ink">
                   Session log
+                </Link>
+              </li>
+              <li>
+                <Link href="/return/" className="inline-flex min-h-11 items-center text-slate underline-offset-4 hover:text-ink">
+                  Open emailed shortlist
                 </Link>
               </li>
               <li>
