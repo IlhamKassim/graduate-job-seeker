@@ -1,6 +1,6 @@
 'use client';
 
-import { PROGRAMS } from '@/data/programs';
+import { catalog } from '@/lib/catalog';
 import { MONTH_SHORT } from '@/data/taxonomy';
 import { resolveWindow } from '@/lib/windows';
 import { useNow } from '@/lib/hooks';
@@ -14,7 +14,8 @@ import { nowPosition, windowSegments } from '@/components/WindowStrip';
 export function YearPreview() {
   const now = useNow();
 
-  const rows = PROGRAMS.map((program) => ({
+  const programs = catalog(false);
+  const rows = programs.map((program) => ({
     id: program.id,
     segments: windowSegments(program.opensMonth, program.closesMonth),
     status: now ? resolveWindow(program, now).status : null,
@@ -70,7 +71,7 @@ export function YearPreview() {
       </div>
 
       <figcaption className="mt-2 font-mono text-[0.75rem] leading-relaxed text-slate">
-        {PROGRAMS.length} sample programmes, one row each, laid over the same twelve months.
+        {programs.length} checked programmes, one row each, laid over the same twelve months.
         {now ? (
           <>
             {' '}

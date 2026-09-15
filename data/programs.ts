@@ -1,16 +1,21 @@
 import type { Program } from '@/types';
+import { VERIFIED_PROGRAMS } from '@/data/verified';
+
+type SampleDraft = Omit<Program, 'applicationCycle' | 'checkedOn'> & {
+  applicationCycle?: Program['applicationCycle'];
+  checkedOn?: string | null;
+};
 
 /**
  * Unverified sample data for the Langkah pilot. Every employer name and every
  * sourceUrl below is real and was checked to resolve; everything else — the
  * programme name where it is generic, the months, the CGPA, the stages and
  * their notes, the process length — is a plausible placeholder, not a fact.
- * To replace a record with verified data: edit the fields from the employer's
- * own published information, point sourceUrl at the specific programme page,
- * and flip dataConfidence to 'verified'.
+ * Verified records live in data/verified.ts and replace the sample with the
+ * same id when both exist.
  */
 
-export const PROGRAMS: Program[] = [
+const SAMPLES: SampleDraft[] = [
   // --- Banking -------------------------------------------------------------
   {
     id: 'maybank-global-maybank-apprentice',
@@ -1400,4 +1405,19 @@ export const PROGRAMS: Program[] = [
     sourceUrl: 'https://www.mida.gov.my/about-mida/career/',
     dataConfidence: 'unverified',
   },
+];
+
+function hydrate(sample: SampleDraft): Program {
+  return {
+    ...sample,
+    applicationCycle: sample.applicationCycle ?? 'seasonal',
+    checkedOn: sample.checkedOn ?? null,
+  };
+}
+
+const verifiedIds = new Set(VERIFIED_PROGRAMS.map((program) => program.id));
+
+export const PROGRAMS: Program[] = [
+  ...VERIFIED_PROGRAMS,
+  ...SAMPLES.filter((sample) => !verifiedIds.has(sample.id)).map(hydrate),
 ];

@@ -7,6 +7,7 @@ import { resolveWindow, shortMonthRangeLabel } from '@/lib/windows';
 import { trackProgramDetailOpened } from '@/lib/analytics';
 import { FitScore } from '@/components/FitScore';
 import { StatusChip } from '@/components/StatusChip';
+import { ConfidenceChip } from '@/components/ConfidenceChip';
 import { WindowStrip } from '@/components/WindowStrip';
 import { TESTID } from '@/lib/testids';
 
@@ -63,7 +64,7 @@ export function ShortlistRow({
         <p className="mt-1.5 font-mono text-[0.75rem] leading-relaxed text-slate">
           {SECTOR_LABEL[program.sector]} · {program.cities.join(', ')} ·{' '}
           {COUNTRY_LABEL[program.country]} · {program.typicalProcessWeeks} wk process ·{' '}
-          {program.stages.length} stages
+          {program.stages.length} {program.stages.length === 1 ? 'stage' : 'stages'}
         </p>
       </div>
 
@@ -78,8 +79,11 @@ export function ShortlistRow({
         />
         <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="font-mono text-[0.75rem] tabular text-ink">
-            {shortMonthRangeLabel(program.opensMonth, program.closesMonth)}
+            {program.applicationCycle === 'rolling'
+              ? 'Year-round'
+              : shortMonthRangeLabel(program.opensMonth, program.closesMonth)}
           </span>
+          <ConfidenceChip confidence={program.dataConfidence} />
           <span className="hidden sm:inline">
             <StatusChip status={window?.status ?? null} />
           </span>

@@ -1,15 +1,25 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { bannerDismissed, dismissBanner, subscribe } from '@/lib/storage';
+import { bannerDismissed, dismissBanner, samplesIncluded, subscribe } from '@/lib/storage';
+import { DATA_SLICE } from '@/lib/config';
 import { TESTID } from '@/lib/testids';
 
-const emptySubscribe = () => () => {};
+function formatCheckedOn(value: string | null): string {
+  if (!value) return '';
+  const [year, month, day] = value.split('-').map(Number);
+  if (!year || !month || !day) return value;
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('en-MY', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
 
 /**
- * Every programme in this build is sample data. Anyone looking at a screen here
- * needs to know that before they act on it, so the banner sits above the content
- * on every page and stays until it is dismissed on purpose.
+ * Honesty sits above every page. The default view is the checked Malaysia slice;
+ * samples stay named as samples.
  */
 export function UnverifiedBanner() {
   const dismissed = useSyncExternalStore(
@@ -17,8 +27,15 @@ export function UnverifiedBanner() {
     () => bannerDismissed(),
     () => false,
   );
+  const samples = useSyncExternalStore(
+    subscribe,
+    () => samplesIncluded(),
+    () => false,
+  );
 
   if (dismissed) return null;
+
+  const checked = formatCheckedOn(DATA_SLICE.checkedOn);
 
   return (
     <div
@@ -33,9 +50,18 @@ export function UnverifiedBanner() {
           className="mt-[3px] h-2.5 w-2.5 shrink-0 border border-paper bg-transparent sm:mt-0"
         />
         <p className="flex-1 font-mono text-[0.75rem] leading-[1.45] text-paper">
-          Sample data, not verified. Every programme below is a placeholder for testing this
-          pilot — check each detail against the employer&rsquo;s own careers page before you
-          rely on it.
+          {samples ? (
+            <>
+              Sample rows are on. Treat anything not marked Checked as a placeholder — open the
+              employer page before you act on it.
+            </>
+          ) : (
+            <>
+              {DATA_SLICE.verifiedCount} Malaysian programmes checked
+              {checked ? ` on ${checked}` : ''}. Windows still move. {DATA_SLICE.sampleCount}{' '}
+              sample records stay hidden until you ask to see them.
+            </>
+          )}
         </p>
         <button
           type="button"

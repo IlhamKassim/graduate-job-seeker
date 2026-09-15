@@ -14,6 +14,7 @@ const KEY = {
   events: 'langkah.events.v1',
   waitlist: 'langkah.waitlist.v1',
   banner: 'langkah.banner.v1',
+  samples: 'langkah.samples.v1',
 } as const;
 
 export const STORAGE_KEYS = KEY;
@@ -220,6 +221,15 @@ export function dismissBanner(): void {
 
 export function restoreBanner(): void {
   writeJson(KEY.banner, { dismissed: false });
+}
+
+export function samplesIncluded(): boolean {
+  const value = readJson<{ included?: unknown }>(KEY.samples);
+  return value?.included === true;
+}
+
+export function setSamplesIncluded(included: boolean): void {
+  writeJson(KEY.samples, { included });
 }
 
 /** Wipes every key this module owns. Used by the reset control on /debug. */

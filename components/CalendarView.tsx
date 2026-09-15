@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { PROGRAMS } from '@/data/programs';
+import { catalog, SAMPLE_COUNT } from '@/lib/catalog';
 import { COUNTRY_LABEL, MONTH_LONG, SECTOR_LABEL } from '@/data/taxonomy';
-import { trackCalendarViewed, trackProgramDetailOpened } from '@/lib/analytics';
-import { useNow, useOnceAfterMount, useProfile } from '@/lib/hooks';
+import { trackCalendarViewed, trackFilterUsed, trackProgramDetailOpened } from '@/lib/analytics';
+import { useNow, useOnceAfterMount, useProfile, useSamplesIncluded } from '@/lib/hooks';
+import { setSamplesIncluded } from '@/lib/storage';
 import { resolveWindow, shortMonthRangeLabel, windowWraps } from '@/lib/windows';
 import { MonthAxis, WindowStrip, monthCentre, nowPosition } from '@/components/WindowStrip';
 import { StatusChip } from '@/components/StatusChip';
+import { ConfidenceChip } from '@/components/ConfidenceChip';
 import { TESTID } from '@/lib/testids';
 import type { Program, WindowStatus } from '@/types';
 
@@ -17,11 +19,13 @@ import type { Program, WindowStatus } from '@/types';
  */
 export function CalendarView() {
   const { profile, ready } = useProfile();
+  const { included: includeSamples } = useSamplesIncluded();
   const now = useNow();
+  const programs = catalog(includeSamples);
 
-  useOnceAfterMount(() => trackCalendarViewed(PROGRAMS.length), [PROGRAMS.length]);
+  useOnceAfterMount(() => trackCalendarViewed(programs.length), [programs.length]);
 
-  const rows = [...PROGRAMS].sort(
+  const rows = [...programs].sort(
     (a, b) =>
       a.opensMonth - b.opensMonth ||
       a.employer.localeCompare(b.employer) ||
@@ -40,9 +44,10 @@ export function CalendarView() {
           The year, laid out.
         </h1>
         <p className="mt-2 max-w-[64ch] text-[0.9375rem] leading-relaxed text-ink-80">
-          Every sample programme on the same twelve months. Open windows are the
-          highlighter. Opening-soon windows are hatched. Closed windows sit as a
-          thinner grey bar. The dashed line is when you finish your degree.
+          Every {includeSamples ? 'programme in this build' : 'checked Malaysian programme'} on
+          the same twelve months. Open windows are the highlighter. Opening-soon windows are
+          hatched. Closed windows sit as a thinner grey bar. The dashed line is when you finish
+          your degree.
         </p>
         {ready && profile ? (
           <p className="mt-2 font-mono text-[0.75rem] leading-relaxed text-ink">
@@ -65,6 +70,21 @@ export function CalendarView() {
         ) : (
           <p className="mt-2 font-mono text-[0.75rem] text-slate">Reading your saved profile…</p>
         )}
+        {SAMPLE_COUNT > 0 ? (
+          <p className="mt-3">
+            <button
+              type="button"
+              className="chip-filter"
+              aria-pressed={includeSamples}
+              onClick={() => {
+                setSamplesIncluded(!includeSamples);
+                trackFilterUsed('samples', null, !includeSamples);
+              }}
+            >
+              {includeSamples ? `Hide ${SAMPLE_COUNT} samples` : `Show ${SAMPLE_COUNT} samples`}
+            </button>
+          </p>
+        ) : null}
       </header>
 
       <Legend now={now} />
@@ -151,12 +171,15 @@ function CalendarRow({ program, now }: { program: Program; now: Date | null }) {
           testable
         />
         <p className="mt-1 font-mono text-[0.75rem] tabular text-ink">
-          {shortMonthRangeLabel(program.opensMonth, program.closesMonth)}
+          {program.applicationCycle === 'rolling'
+            ? 'Year-round'
+            : shortMonthRangeLabel(program.opensMonth, program.closesMonth)}
           {wraps ? ' · runs across new year' : ''}
         </p>
       </div>
 
-      <div className="sm:justify-self-end">
+      <div className="flex flex-wrap items-center gap-2 sm:justify-self-end">
+        <ConfidenceChip confidence={program.dataConfidence} />
         <StatusChip status={status} />
       </div>
     </li>

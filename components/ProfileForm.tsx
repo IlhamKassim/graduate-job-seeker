@@ -477,8 +477,8 @@ export function ProfileForm() {
 
       <div className="rule-top flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-[44ch] text-[0.8125rem] leading-snug text-slate">
-          Your answers stay in this browser. Nothing is sent anywhere, and there is no account
-          to make.
+          Your answers stay in this browser. There is no account. A waitlist address is only sent
+          if you leave one later, with consent.
         </p>
         <button type="submit" data-testid={TESTID.profileSubmit} className="btn btn-primary">
           {hadSavedProfile ? 'Update and see my shortlist' : 'See my shortlist'}

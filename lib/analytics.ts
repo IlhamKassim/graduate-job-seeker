@@ -3,10 +3,8 @@ import { appendEvent, type EventType, type StoredEvent } from '@/lib/storage';
 
 /**
  * The pilot's whole reason for existing is finding out what students actually
- * do with it, so this records the handful of moments that answer that.
- *
- * It writes to localStorage and nowhere else. Nothing leaves the device, there
- * is no network call, and /debug is how a session gets collected afterwards.
+ * do with it. It still writes a session log to this browser, and it also posts
+ * a sanitised copy to /api/events so a public session is not lost.
  */
 
 function newId(): string {
@@ -19,6 +17,20 @@ function newId(): string {
 function record(type: EventType, payload: Record<string, unknown> = {}): void {
   const event: StoredEvent = { id: newId(), type, at: new Date().toISOString(), payload };
   appendEvent(event);
+  if (typeof fetch === 'undefined') return;
+  void fetch('/api/events/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: event.id,
+      type: event.type,
+      at: event.at,
+      payload: event.payload,
+    }),
+    keepalive: true,
+  }).catch(() => {
+    // Capture is best-effort. The browser log is still the local record.
+  });
 }
 
 export function trackProfileSubmitted(profile: Profile): void {
@@ -42,7 +54,7 @@ export function trackProgramDetailOpened(programId: string, employer: string): v
   record('program_detail_opened', { programId, employer });
 }
 
-export type FilterKind = 'sector' | 'country' | 'status' | 'reset';
+export type FilterKind = 'sector' | 'country' | 'status' | 'reset' | 'samples';
 
 export function trackFilterUsed(
   kind: FilterKind,

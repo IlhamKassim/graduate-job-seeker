@@ -8,6 +8,7 @@ import { resolveWindow } from '@/lib/windows';
 import { useNow, useProfile } from '@/lib/hooks';
 import { FitScore } from '@/components/FitScore';
 import { StatusChip } from '@/components/StatusChip';
+import { ConfidenceChip } from '@/components/ConfidenceChip';
 import { WindowStrip } from '@/components/WindowStrip';
 import { TESTID } from '@/lib/testids';
 
@@ -36,10 +37,13 @@ export function ProgramEligibility({ program }: { program: Program }) {
         />
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <StatusChip status={window?.status ?? null} />
+          <ConfidenceChip confidence={program.dataConfidence} />
           <span className="font-mono text-[0.75rem] tabular text-ink">
-            {MONTH_LONG[program.opensMonth - 1]} – {MONTH_LONG[program.closesMonth - 1]}
+            {program.applicationCycle === 'rolling'
+              ? 'Year-round'
+              : `${MONTH_LONG[program.opensMonth - 1]} – ${MONTH_LONG[program.closesMonth - 1]}`}
           </span>
-          {program.opensMonth > program.closesMonth ? (
+          {program.applicationCycle !== 'rolling' && program.opensMonth > program.closesMonth ? (
             <span className="font-mono text-[0.75rem] text-slate">runs across new year</span>
           ) : null}
         </div>

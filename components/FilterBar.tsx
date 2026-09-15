@@ -50,15 +50,26 @@ export function FilterBar({
   resultCount,
   totalCount,
   statusesKnown,
+  includeSamples,
+  sampleCount,
+  onToggleSamples,
 }: {
   filters: Filters;
-  onChange: (next: Filters, kind: 'sector' | 'country' | 'status' | 'reset', value: string | null, active: boolean) => void;
+  onChange: (
+    next: Filters,
+    kind: 'sector' | 'country' | 'status' | 'reset',
+    value: string | null,
+    active: boolean,
+  ) => void;
   availableSectors: Sector[];
   availableCountries: ('MY' | 'SG')[];
   availableStatuses: WindowStatus[];
   resultCount: number;
   totalCount: number;
   statusesKnown: boolean;
+  includeSamples: boolean;
+  sampleCount: number;
+  onToggleSamples: (included: boolean) => void;
 }) {
   const active = filtersActive(filters);
 
@@ -150,6 +161,20 @@ export function FilterBar({
               );
             },
           )}
+        </Group>
+      ) : null}
+
+      {sampleCount > 0 ? (
+        <Group label="Data">
+          <button
+            type="button"
+            data-testid="filter-samples"
+            aria-pressed={includeSamples}
+            className="chip-filter"
+            onClick={() => onToggleSamples(!includeSamples)}
+          >
+            {includeSamples ? `Hide ${sampleCount} samples` : `Show ${sampleCount} samples`}
+          </button>
         </Group>
       ) : null}
 

@@ -215,6 +215,17 @@ body {
   border-color: var(--color-rule);
 }
 
+.chip-status--verified {
+  background-color: transparent;
+  color: var(--color-ink);
+}
+
+.chip-status--sample {
+  background-color: transparent;
+  color: var(--color-slate);
+  border-color: var(--color-rule);
+}
+
 /* ---------------------------------------------------------------------------
    Form controls. Built to look like fields on a paper form, not SaaS inputs.
    --------------------------------------------------------------------------- */

@@ -80,9 +80,12 @@ export function eligibilityReasons(program: Program, profile: Profile): Ineligib
   }
 
   if (!program.degreeFields.includes(profile.degreeField)) {
+    const anyField = program.degreeFields.length >= 20;
     reasons.push({
       code: 'field',
-      sentence: `Open to ${listFields(program.degreeFields)}; your degree is ${profile.degreeField}.`,
+      sentence: anyField
+        ? `This programme lists a wide set of fields and still does not include ${profile.degreeField}.`
+        : `Open to ${listFields(program.degreeFields)}; your degree is ${profile.degreeField}.`,
     });
   }
 

@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { Sector, WindowStatus } from '@/types';
-import { PROGRAMS } from '@/data/programs';
+import { catalog, SAMPLE_COUNT } from '@/lib/catalog';
 import { MONTH_LONG } from '@/data/taxonomy';
 import { scoreAll } from '@/lib/fit';
 import { resolveWindow } from '@/lib/windows';
 import { trackFilterUsed, trackShortlistViewed } from '@/lib/analytics';
-import { useNow, useProfile } from '@/lib/hooks';
+import { useNow, useProfile, useSamplesIncluded } from '@/lib/hooks';
+import { setSamplesIncluded } from '@/lib/storage';
 import { FilterBar, NO_FILTERS, type Filters } from '@/components/FilterBar';
 import { ShortlistRow } from '@/components/ShortlistRow';
 import { IneligibleSection } from '@/components/IneligibleSection';
@@ -19,14 +20,18 @@ type SortKey = 'fit' | 'soonest';
 
 export function ShortlistView() {
   const { profile, ready } = useProfile();
+  const { included: includeSamples } = useSamplesIncluded();
   const now = useNow();
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [sort, setSort] = useState<SortKey>('fit');
   const reported = useRef(false);
 
   const scored = useMemo(
-    () => (profile ? scoreAll(PROGRAMS, profile) : { eligible: [], ineligible: [] }),
-    [profile],
+    () =>
+      profile
+        ? scoreAll(catalog(includeSamples), profile)
+        : { eligible: [], ineligible: [] },
+    [profile, includeSamples],
   );
 
   useEffect(() => {
@@ -186,7 +191,11 @@ export function ShortlistView() {
       {nothingEligible ? (
         <EmptyState
           testId={TESTID.shortlistEmpty}
-          title="None of the 30 sample programmes will take this profile."
+          title={
+            includeSamples
+              ? 'None of these programmes will take this profile.'
+              : 'None of the checked programmes will take this profile.'
+          }
           body="That is a real answer, not a bug. The three things that close programmes are CGPA, degree field and citizenship, and the list below shows exactly which one blocked each programme."
           actions={
             <>
@@ -236,6 +245,12 @@ export function ShortlistView() {
             resultCount={filtered.length}
             totalCount={withWindows.length}
             statusesKnown={Boolean(now)}
+            includeSamples={includeSamples}
+            sampleCount={SAMPLE_COUNT}
+            onToggleSamples={(included) => {
+              setSamplesIncluded(included);
+              trackFilterUsed('samples', null, included);
+            }}
           />
 
           {filtersHideEverything ? (

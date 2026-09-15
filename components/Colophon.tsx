@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { APP_NAME } from '@/lib/config';
-import { PROGRAMS } from '@/data/programs';
+import { APP_NAME, DATA_SLICE } from '@/lib/config';
 
 export function Colophon() {
   return (
@@ -9,9 +8,12 @@ export function Colophon() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-[46ch]">
             <p className="text-[0.9375rem] leading-relaxed text-ink">
-              {APP_NAME} is a pilot. It holds {PROGRAMS.length} sample programmes and runs
-              entirely in your browser — nothing you type is sent anywhere, and clearing your
-              browser data clears it.
+              {APP_NAME} holds {DATA_SLICE.verifiedCount} programmes checked against employer
+              pages
+              {DATA_SLICE.checkedOn ? ` on ${DATA_SLICE.checkedOn}` : ''}, plus{' '}
+              {DATA_SLICE.sampleCount} sample records kept off the default shortlist. Your
+              profile stays in this browser. A waitlist address is also sent to the server if
+              capture is configured.
             </p>
             <p className="mt-3 text-[0.875rem] leading-relaxed text-slate">
               The fit score is a transparent sum of four fixed weights, shown in full on every
@@ -39,6 +41,11 @@ export function Colophon() {
               <li>
                 <Link href="/debug/" className="inline-flex min-h-11 items-center text-slate underline-offset-4 hover:text-ink">
                   Session log
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy/" className="inline-flex min-h-11 items-center text-slate underline-offset-4 hover:text-ink">
+                  Privacy
                 </Link>
               </li>
             </ul>

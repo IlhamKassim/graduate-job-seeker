@@ -2,10 +2,10 @@ import type { Program, WindowStatus } from '@/types';
 import { MONTH_LONG, MONTH_SHORT } from '@/data/taxonomy';
 
 /**
- * Application windows are stored as a month range with no year, because that is
- * all the seed data honestly knows: employers run roughly the same window every
- * intake. Everything here therefore reasons about an annual cycle, and the copy
- * says "typically" rather than asserting a date.
+ * Application windows are stored as a month range with no year for seasonal
+ * programmes, because that is all most employers publish as a repeating cycle.
+ * Rolling programmes accept applications year-round; their bar covers all
+ * twelve months and the copy says so instead of inventing a close date.
  */
 
 export interface WindowInfo {
@@ -64,9 +64,25 @@ export function shortMonthRangeLabel(opensMonth: number, closesMonth: number): s
  * "today" means and tests can pin it.
  */
 export function resolveWindow(
-  program: Pick<Program, 'opensMonth' | 'closesMonth'>,
+  program: Pick<Program, 'opensMonth' | 'closesMonth' | 'applicationCycle'>,
   now: Date,
 ): WindowInfo {
+  if (program.applicationCycle === 'rolling') {
+    const months = windowMonths(1, 12);
+    return {
+      status: 'open',
+      months,
+      wraps: false,
+      monthsUntilOpen: 0,
+      monthsLeftOpen: 12,
+      monthsSinceClose: null,
+      shortLabel: 'Open',
+      label:
+        'Applications are accepted year-round. Check the employer page for the next intake cut-off.',
+      rangeLabel: 'Year-round',
+    };
+  }
+
   const { opensMonth, closesMonth } = program;
   const currentMonth = now.getMonth() + 1;
   const months = windowMonths(opensMonth, closesMonth);

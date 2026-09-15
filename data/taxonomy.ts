@@ -8,6 +8,7 @@ import type { Sector } from '@/types';
 export const CITIES = [
   'Kuala Lumpur',
   'Penang',
+  'Kulim',
   'Johor',
   'Kota Kinabalu',
   'Singapore',
@@ -18,6 +19,7 @@ export type City = (typeof CITIES)[number];
 export const CITY_COUNTRY: Record<City, 'MY' | 'SG'> = {
   'Kuala Lumpur': 'MY',
   Penang: 'MY',
+  Kulim: 'MY',
   Johor: 'MY',
   'Kota Kinabalu': 'MY',
   Singapore: 'SG',

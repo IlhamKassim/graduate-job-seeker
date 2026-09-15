@@ -34,6 +34,10 @@ export interface Program {
   typicalProcessWeeks: number;
   sourceUrl: string;
   dataConfidence: DataConfidence;
+  /** Seasonal uses opensMonth/closesMonth. Rolling accepts applications year-round. */
+  applicationCycle: 'seasonal' | 'rolling';
+  /** ISO date (YYYY-MM-DD) the record was checked against sourceUrl. Null on samples. */
+  checkedOn: string | null;
 }
 
 export interface Profile {

@@ -18,7 +18,7 @@ const emptySubscribe = () => () => {};
 
 /**
  * How a pilot session is collected: the event log and waitlist as readable JSON,
- * with a copy button. Nothing here is sent anywhere.
+ * plus a gated dump of what reached the server.
  */
 export function DebugView() {
   const mounted = useMounted();
@@ -42,9 +42,9 @@ export function DebugView() {
           Session log
         </h1>
         <p className="mt-2 max-w-[62ch] text-[0.9375rem] leading-relaxed text-ink-80">
-          Everything this browser recorded during the pilot. Copy the JSON after a
-          session and paste it somewhere you keep notes. Clearing the log only
-          affects this device.
+          Everything this browser recorded. Copy the JSON after a facilitated
+          session. The waitlist is also posted to the server when capture is
+          configured; paste the operator secret below to read that copy.
         </p>
       </header>
 
@@ -122,6 +122,8 @@ export function DebugView() {
               {waitlistJson}
             </pre>
           </section>
+
+          <ServerDump />
 
           <section aria-labelledby="reset-heading">
             <div className="rule-heavy pb-2">
@@ -236,5 +238,72 @@ function CopyButton({
         {state === 'copied' ? 'Copied to the clipboard' : ''}
       </span>
     </button>
+  );
+}
+
+function ServerDump() {
+  const [secret, setSecret] = useState('');
+  const [text, setText] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  return (
+    <section aria-labelledby="server-heading">
+      <div className="rule-heavy pb-2">
+        <h2 id="server-heading" className="text-[1.25rem] font-semibold tracking-[-0.02em] text-ink">
+          Server capture
+        </h2>
+      </div>
+      <p className="mt-3 max-w-[58ch] text-[0.9375rem] leading-relaxed text-ink-80">
+        Waitlist addresses and sanitised events that reached /api. Needs{' '}
+        <span className="font-mono text-[0.8125rem]">CAPTURE_ADMIN_SECRET</span>.
+      </p>
+      <form
+        className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-start"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setPending(true);
+          setError(null);
+          try {
+            const response = await fetch('/api/capture/', {
+              headers: { Authorization: `Bearer ${secret}` },
+            });
+            const json = await response.json();
+            if (!response.ok) {
+              setError(typeof json.error === 'string' ? json.error : 'Could not load capture.');
+              setText('');
+              return;
+            }
+            setText(JSON.stringify(json, null, 2));
+          } catch {
+            setError('Could not reach the capture route.');
+          } finally {
+            setPending(false);
+          }
+        }}
+      >
+        <input
+          className="field-control sm:max-w-sm"
+          type="password"
+          autoComplete="off"
+          placeholder="Operator secret"
+          value={secret}
+          onChange={(event) => setSecret(event.target.value)}
+        />
+        <button type="submit" className="btn btn-secondary" disabled={pending || !secret}>
+          {pending ? 'Loading…' : 'Load server copy'}
+        </button>
+      </form>
+      {error ? (
+        <p role="alert" className="mt-2 text-[0.8125rem] text-oxblood">
+          {error}
+        </p>
+      ) : null}
+      {text ? (
+        <pre className="mt-4 overflow-x-auto border border-rule bg-white p-3 font-mono text-[0.75rem] leading-relaxed text-ink">
+          {text}
+        </pre>
+      ) : null}
+    </section>
   );
 }

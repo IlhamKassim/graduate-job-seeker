@@ -5,10 +5,10 @@ import { PROGRAMS } from '@/data/programs';
 import { COUNTRY_LABEL, SECTOR_LABEL } from '@/data/taxonomy';
 import { preparationFor, processShape, STAGE_LABEL } from '@/lib/prepare';
 import { monthRangeLabel } from '@/lib/windows';
-import { formatCgpa } from '@/lib/fit';
 import { StageTimeline } from '@/components/StageTimeline';
 import { ProgramEligibility } from '@/components/ProgramEligibility';
 import { ProgramViewTracker } from '@/components/ProgramViewTracker';
+import { ConfidenceChip } from '@/components/ConfidenceChip';
 import { TESTID } from '@/lib/testids';
 
 export function generateStaticParams() {
@@ -25,7 +25,7 @@ export async function generateMetadata({
   if (!program) return { title: 'Programme not found' };
   return {
     title: `${program.employer} — ${program.name}`,
-    description: `What the ${program.employer} ${program.name} puts applicants through, and when its window opens. Sample data for a pilot.`,
+    description: `What the ${program.employer} ${program.name} puts applicants through, and when its window opens.${program.dataConfidence === 'verified' ? '' : ' Sample data.'}`,
   };
 }
 
@@ -51,9 +51,16 @@ export default async function ProgramPage({ params }: { params: Promise<{ id: st
           {program.employer}
         </h1>
         <p className="mt-1 text-[1.0625rem] leading-snug text-ink-80">{program.name}</p>
-        <p className="mt-2.5 font-mono text-[0.75rem] leading-relaxed text-slate">
-          {SECTOR_LABEL[program.sector]} · {program.cities.join(', ')} ·{' '}
-          {COUNTRY_LABEL[program.country]} · window {monthRangeLabel(program.opensMonth, program.closesMonth)}
+        <p className="mt-2.5 flex flex-wrap items-center gap-2 font-mono text-[0.75rem] leading-relaxed text-slate">
+          <ConfidenceChip confidence={program.dataConfidence} />
+          <span>
+            {SECTOR_LABEL[program.sector]} · {program.cities.join(', ')} ·{' '}
+            {COUNTRY_LABEL[program.country]} · window{' '}
+            {program.applicationCycle === 'rolling'
+              ? 'year-round'
+              : monthRangeLabel(program.opensMonth, program.closesMonth)}
+            {program.checkedOn ? ` · checked ${program.checkedOn}` : ''}
+          </span>
         </p>
       </header>
 
@@ -126,9 +133,20 @@ export default async function ProgramPage({ params }: { params: Promise<{ id: st
               </h2>
             </div>
             <p className="mt-3 max-w-[62ch] text-[0.9375rem] leading-relaxed text-ink-80">
-              Everything on this page except the employer name and the link below is sample
-              data. The window months, the {formatCgpa(program.minCGPA ?? 0) !== '0.00' ? 'CGPA minimum, ' : ''}
-              stage list and the timings are placeholders for testing this pilot.
+              {program.dataConfidence === 'verified' ? (
+                <>
+                  The eligibility bar, window and stages on this page were read from the
+                  employer&rsquo;s own page
+                  {program.checkedOn ? ` on ${program.checkedOn}` : ''}. Windows still move.
+                  Open that page before you act.
+                </>
+              ) : (
+                <>
+                  This row is sample data. The window months, CGPA, stage list and timings are
+                  placeholders for testing. Check the employer page before you rely on any of
+                  it.
+                </>
+              )}
             </p>
             <p className="mt-4">
               <a

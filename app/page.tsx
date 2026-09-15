@@ -1,6 +1,6 @@
 import { ProfileForm } from '@/components/ProfileForm';
 import { YearPreview } from '@/components/YearPreview';
-import { PROGRAMS } from '@/data/programs';
+import { DATA_SLICE } from '@/lib/config';
 
 export default function LandingPage() {
   return (
@@ -13,15 +13,14 @@ export default function LandingPage() {
 
           <div className="mt-5 max-w-[58ch] space-y-3 text-[1.0625rem] leading-relaxed text-ink-80">
             <p>
-              Every graduate programme in Malaysia and Singapore sits on its own careers page,
-              with its own opening month and its own eligibility bar buried somewhere in the
-              form. You usually find out you were never eligible, or that the window shut in
-              March, after you have already spent an evening on it.
+              Graduate programmes in Malaysia and Singapore sit on separate careers pages, each
+              with its own window and eligibility bar. You usually find out you were never
+              eligible, or that the window shut in March, after you have already spent an
+              evening on it.
             </p>
             <p>
-              Answer seven questions once and you get all three answers on one page: what you
-              qualify for, when each window opens, and what each employer will put you
-              through.
+              Answer seven questions once. The default shortlist is a Malaysia slice checked
+              against employer pages. Samples stay hidden until you ask.
             </p>
           </div>
         </div>
@@ -40,7 +39,7 @@ export default function LandingPage() {
             Your profile
           </h2>
           <p className="font-mono text-[0.75rem] text-slate">
-            7 questions · one screen · checked against {PROGRAMS.length} programmes
+            7 questions · one screen · {DATA_SLICE.verifiedCount} checked programmes
           </p>
         </div>
 

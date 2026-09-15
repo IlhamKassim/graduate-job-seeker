@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import type { Profile } from '@/types';
-import { loadProfile, subscribe } from '@/lib/storage';
+import { loadProfile, samplesIncluded, subscribe } from '@/lib/storage';
 
 /**
  * The pages are prerendered but every answer depends on localStorage and on
@@ -41,6 +41,16 @@ export function useProfile(): { profile: Profile | null; ready: boolean } {
   );
 
   return { profile: snapshot, ready: mounted };
+}
+
+export function useSamplesIncluded(): { included: boolean; ready: boolean } {
+  const mounted = useMounted();
+  const included = useSyncExternalStore(
+    mounted ? subscribe : emptySubscribe,
+    () => (mounted ? samplesIncluded() : false),
+    () => false,
+  );
+  return { included, ready: mounted };
 }
 
 /**
