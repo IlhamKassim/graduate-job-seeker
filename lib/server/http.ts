@@ -4,6 +4,10 @@ const looksLikeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const hits = new Map<string, { count: number; resetAt: number }>();
 
+export function resetRateLimitsForTests(): void {
+  hits.clear();
+}
+
 export function clientIp(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0]?.trim() || 'unknown';

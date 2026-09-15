@@ -21,10 +21,27 @@ interface CaptureFile {
   events: CaptureEventRow[];
 }
 
-const FILE_PATH = path.join(
-  process.env.VERCEL ? '/tmp' : path.join(process.cwd(), '.data'),
-  'capture.json',
-);
+/** Product events older than this are dropped on write. Waitlist rows are kept. */
+export const EVENT_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+
+function filePath(): string {
+  const override = process.env.CAPTURE_FILE?.trim();
+  if (override) return override;
+  return path.join(process.env.VERCEL ? '/tmp' : path.join(process.cwd(), '.data'), 'capture.json');
+}
+
+function retentionCutoffIso(now = Date.now()): string {
+  return new Date(now - EVENT_RETENTION_MS).toISOString();
+}
+
+function eventsWithinRetention(events: CaptureEventRow[], now = Date.now()): CaptureEventRow[] {
+  const cutoff = now - EVENT_RETENTION_MS;
+  return events.filter((row) => {
+    const ts = Date.parse(row.at);
+    if (Number.isNaN(ts)) return true;
+    return ts >= cutoff;
+  });
+}
 
 function databaseUrl(): string | null {
   const value = process.env.DATABASE_URL?.trim();
@@ -33,7 +50,7 @@ function databaseUrl(): string | null {
 
 async function readFileStore(): Promise<CaptureFile> {
   try {
-    const raw = await readFile(FILE_PATH, 'utf8');
+    const raw = await readFile(/* turbopackIgnore: true */ filePath(), 'utf8');
     const parsed = JSON.parse(raw) as Partial<CaptureFile>;
     return {
       waitlist: Array.isArray(parsed.waitlist) ? parsed.waitlist : [],
@@ -45,8 +62,9 @@ async function readFileStore(): Promise<CaptureFile> {
 }
 
 async function writeFileStore(next: CaptureFile): Promise<void> {
-  await mkdir(path.dirname(FILE_PATH), { recursive: true });
-  await writeFile(FILE_PATH, JSON.stringify(next, null, 2));
+  const destination = filePath();
+  await mkdir(path.dirname(destination), { recursive: true });
+  await writeFile(/* turbopackIgnore: true */ destination, JSON.stringify(next, null, 2));
 }
 
 async function ensurePostgres() {
@@ -102,10 +120,12 @@ export async function appendEventRow(row: CaptureEventRow): Promise<void> {
       VALUES (${row.id}, ${row.type}, ${row.at}, ${JSON.stringify(row.payload)})
       ON CONFLICT (id) DO NOTHING
     `;
+    const cutoff = retentionCutoffIso();
+    await sql`DELETE FROM langkah_events WHERE at < ${cutoff}`;
     return;
   }
   const store = await readFileStore();
-  store.events = [...store.events, row].slice(-2000);
+  store.events = eventsWithinRetention([...store.events, row]).slice(-2000);
   await writeFileStore(store);
 }
 

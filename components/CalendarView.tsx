@@ -74,6 +74,7 @@ export function CalendarView() {
           <p className="mt-3">
             <button
               type="button"
+              data-testid={TESTID.filterSamples}
               className="chip-filter"
               aria-pressed={includeSamples}
               onClick={() => {

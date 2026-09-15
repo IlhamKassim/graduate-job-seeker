@@ -282,15 +282,21 @@ function ServerDump() {
           }
         }}
       >
-        <input
-          className="field-control sm:max-w-sm"
-          type="password"
-          autoComplete="off"
-          placeholder="Operator secret"
-          value={secret}
-          onChange={(event) => setSecret(event.target.value)}
-        />
-        <button type="submit" className="btn btn-secondary" disabled={pending || !secret}>
+        <div className="min-w-0 flex-1 sm:max-w-sm">
+          <label htmlFor="capture-secret" className="sr-only-focusable">
+            Operator secret
+          </label>
+          <input
+            id="capture-secret"
+            className="field-control"
+            type="password"
+            autoComplete="off"
+            placeholder="Operator secret"
+            value={secret}
+            onChange={(event) => setSecret(event.target.value)}
+          />
+        </div>
+        <button type="submit" className="btn btn-secondary" disabled={pending}>
           {pending ? 'Loading…' : 'Load server copy'}
         </button>
       </form>

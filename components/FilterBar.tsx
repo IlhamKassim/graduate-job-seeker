@@ -168,7 +168,7 @@ export function FilterBar({
         <Group label="Data">
           <button
             type="button"
-            data-testid="filter-samples"
+            data-testid={TESTID.filterSamples}
             aria-pressed={includeSamples}
             className="chip-filter"
             onClick={() => onToggleSamples(!includeSamples)}

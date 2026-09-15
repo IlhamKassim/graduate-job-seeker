@@ -1,4 +1,5 @@
 import { listCapture, capturePersistence } from '@/lib/server/capture';
+import { reportError } from '@/lib/server/sentry';
 
 export const runtime = 'nodejs';
 
@@ -15,11 +16,16 @@ export async function GET(request: Request) {
   if (!authorised(request)) {
     return Response.json({ ok: false, error: 'Unauthorised.' }, { status: 401 });
   }
-  const data = await listCapture();
-  return Response.json({
-    ok: true,
-    persisted: capturePersistence(),
-    waitlist: data.waitlist,
-    events: data.events,
-  });
+  try {
+    const data = await listCapture();
+    return Response.json({
+      ok: true,
+      persisted: capturePersistence(),
+      waitlist: data.waitlist,
+      events: data.events,
+    });
+  } catch (error) {
+    await reportError(error);
+    return Response.json({ ok: false, error: 'Could not read capture just now.' }, { status: 500 });
+  }
 }

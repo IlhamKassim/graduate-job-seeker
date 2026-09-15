@@ -7,12 +7,16 @@ import {
   validEmail,
 } from '@/lib/server/http';
 import { appendWaitlistRow, capturePersistence, emailAlreadyListed } from '@/lib/server/capture';
+import { reportError } from '@/lib/server/sentry';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   if (!allowRequest(clientIp(request), 8, 60 * 60 * 1000, 'waitlist')) {
-    return Response.json({ ok: false, error: 'Too many tries from this network. Wait and try again.' }, { status: 429 });
+    return Response.json(
+      { ok: false, error: 'Too many tries from this network. Wait and try again.' },
+      { status: 429 },
+    );
   }
 
   let body: unknown;
@@ -46,16 +50,24 @@ export async function POST(request: Request) {
     );
   }
 
-  if (await emailAlreadyListed(email)) {
-    return Response.json({ ok: true, already: true, persisted: capturePersistence() });
-  }
+  try {
+    if (await emailAlreadyListed(email)) {
+      return Response.json({ ok: true, already: true, persisted: capturePersistence() });
+    }
 
-  await appendWaitlistRow({
-    id: newId(),
-    email,
-    at: new Date().toISOString(),
-    consentVersion: CONSENT_VERSION,
-  });
+    await appendWaitlistRow({
+      id: newId(),
+      email,
+      at: new Date().toISOString(),
+      consentVersion: CONSENT_VERSION,
+    });
+  } catch (error) {
+    await reportError(error);
+    return Response.json(
+      { ok: false, error: 'Could not save that just now. Try again shortly.' },
+      { status: 500 },
+    );
+  }
 
   return Response.json({ ok: true, persisted: capturePersistence() });
 }

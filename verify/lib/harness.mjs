@@ -89,6 +89,7 @@ export class Ctx {
       events,
       waitlist,
       banner = { dismissed: false },
+      samples = true,
       reducedMotion,
       permissions = [],
       label = 'session',
@@ -107,6 +108,7 @@ export class Ctx {
     if (events !== undefined) seed[STORAGE_KEYS.events] = events;
     if (waitlist !== undefined) seed[STORAGE_KEYS.waitlist] = waitlist;
     if (banner !== undefined) seed[STORAGE_KEYS.banner] = banner;
+    if (samples !== undefined) seed[STORAGE_KEYS.samples] = { included: Boolean(samples) };
 
     await context.addInitScript(installHelpers);
     await context.addInitScript(
