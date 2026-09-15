@@ -1,5 +1,6 @@
 import type { Program, WindowStatus } from '@/types';
 import { MONTH_LONG, MONTH_SHORT } from '@/data/taxonomy';
+import { calendarDayDiff, parseIsoDate } from '@/lib/iso-date';
 
 /**
  * Application windows are stored as a month range with no year for seasonal
@@ -164,3 +165,43 @@ export const WINDOW_STATUS_LABEL: Record<WindowStatus, string> = {
   opening_soon: 'Opening soon',
   closed: 'Closed',
 };
+
+export const CLOSING_SOON_DAYS = 14;
+
+export interface ClosingSoonInfo {
+  daysLeft: number | null;
+  lastMonth: boolean;
+}
+
+/**
+ * True when a seasonal window has a published close date within `withinDays`,
+ * or (when there is no calendar date) when this is the last published month.
+ * Rolling programmes never qualify — they have no close to warn about.
+ */
+export function isClosingSoon(
+  program: Pick<Program, 'applicationCycle' | 'closesOn' | 'opensMonth' | 'closesMonth'>,
+  now: Date,
+  withinDays = CLOSING_SOON_DAYS,
+): boolean {
+  return closingSoonInfo(program, now, withinDays) !== null;
+}
+
+export function closingSoonInfo(
+  program: Pick<Program, 'applicationCycle' | 'closesOn' | 'opensMonth' | 'closesMonth'>,
+  now: Date,
+  withinDays = CLOSING_SOON_DAYS,
+): ClosingSoonInfo | null {
+  if (program.applicationCycle === 'rolling') return null;
+
+  if (program.closesOn) {
+    const close = parseIsoDate(program.closesOn);
+    if (!close) return null;
+    const daysLeft = calendarDayDiff(now, close);
+    if (daysLeft < 0 || daysLeft > withinDays) return null;
+    return { daysLeft, lastMonth: false };
+  }
+
+  const info = resolveWindow(program, now);
+  if (info.status !== 'open' || info.monthsLeftOpen !== 1) return null;
+  return { daysLeft: null, lastMonth: true };
+}

@@ -53,6 +53,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
     sourceUrl: 'https://www.cimb.com/en/careers/fresh-graduate/the-complete-banker.html',
     dataConfidence: 'verified',
     applicationCycle: 'rolling',
+    closesOn: null,
     checkedOn: CHECKED_ON,
   },
   {
@@ -71,7 +72,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
     stages: [
       {
         stage: 'online_application',
-        note: 'CV, transcripts and CGPA through the Maxis portal. The 2026 intake cut-off was 10 July; the page currently says applications are closed.',
+        note: 'CV, transcripts and CGPA through the Maxis portal. The 2026 intake cut-off was 10 July 2026; the page currently says applications are closed.',
       },
       {
         stage: 'video_interview',
@@ -94,6 +95,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
     sourceUrl: 'https://www.maxis.com.my/en/about-maxis/career/maxis-graduate-programme/',
     dataConfidence: 'verified',
     applicationCycle: 'seasonal',
+    closesOn: '2026-07-10',
     checkedOn: CHECKED_ON,
   },
   {
@@ -119,6 +121,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
     sourceUrl: 'https://www.petronas.com/careers/students-graduates',
     dataConfidence: 'verified',
     applicationCycle: 'rolling',
+    closesOn: null,
     checkedOn: CHECKED_ON,
   },
   {
@@ -176,6 +179,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
       'https://www.shell.com.my/about-us/careers/students-and-graduates/details-on-the-graduate-programme-and-how-to-apply.html',
     dataConfidence: 'verified',
     applicationCycle: 'rolling',
+    closesOn: null,
     checkedOn: CHECKED_ON,
   },
   {
@@ -201,6 +205,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
     sourceUrl: 'https://kpmg.com/my/en/careers/graduates.html',
     dataConfidence: 'verified',
     applicationCycle: 'rolling',
+    closesOn: null,
     checkedOn: CHECKED_ON,
   },
   {
@@ -239,6 +244,7 @@ export const VERIFIED_PROGRAMS: Program[] = [
     sourceUrl: 'https://intel.wd1.myworkdayjobs.com/en-US/External/job/ICE-Graduate-Talent_JR0282130',
     dataConfidence: 'verified',
     applicationCycle: 'rolling',
+    closesOn: null,
     checkedOn: CHECKED_ON,
   },
   {
@@ -272,6 +278,124 @@ export const VERIFIED_PROGRAMS: Program[] = [
     sourceUrl: 'https://jobs.infineon.com/careers?query=Graduate%20Technical%20Program&location=Malaysia',
     dataConfidence: 'verified',
     applicationCycle: 'rolling',
+    closesOn: null,
+    checkedOn: CHECKED_ON,
+  },
+  {
+    id: 'grab-cfo-graduate-programme',
+    name: 'CFO Graduate Programme',
+    employer: 'Grab',
+    sector: 'tech',
+    cities: ['Kuala Lumpur'],
+    country: 'MY',
+    opensMonth: 4,
+    closesMonth: 5,
+    minCGPA: 3.6,
+    degreeFields: [
+      'Accounting',
+      'Finance',
+      'Economics',
+      'Business Administration',
+      'Mathematics',
+      'Statistics',
+    ],
+    citizenshipRequired: 'any',
+    visaSponsored: false,
+    stages: [
+      {
+        stage: 'online_application',
+        note: 'CV and a short cover letter. The 2026 window was 13 April to 15 May. The page asks for final-year students graduating by mid-2026 or recent graduates, able to start full-time by September 2026. It does not name a city beyond Malaysia.',
+      },
+      {
+        stage: 'aptitude_test',
+        note: 'An online logical and numerical test, then a screen with Talent Acquisition.',
+      },
+      {
+        stage: 'panel_interview',
+        note: 'A technical interview with Malaysia Finance Leadership.',
+      },
+      {
+        stage: 'assessment_centre',
+        note: 'The Grab Challenge: a case-study session on a business problem.',
+      },
+      {
+        stage: 'final_interview',
+        note: 'A session with the Group CFO and the Malaysia CFO. Offers are for a September start.',
+      },
+    ],
+    typicalProcessWeeks: 12,
+    sourceUrl: 'https://www.grab.careers/en/my-cfo-graduate-programme/',
+    dataConfidence: 'verified',
+    applicationCycle: 'seasonal',
+    closesOn: '2026-05-15',
+    checkedOn: CHECKED_ON,
+  },
+  {
+    id: 'celcomdigi-graduate-programme',
+    name: 'Young Talent Programme',
+    employer: 'CelcomDigi',
+    sector: 'telco',
+    cities: ['Kuala Lumpur'],
+    country: 'MY',
+    opensMonth: 5,
+    closesMonth: 7,
+    minCGPA: 3.5,
+    degreeFields: ANY_FIELD,
+    citizenshipRequired: 'MY',
+    visaSponsored: false,
+    stages: [
+      {
+        stage: 'online_application',
+        note: 'Virtual application, listed as May to July. Malaysian citizens aged 25 and under, a relevant bachelor’s or master’s, CGPA 3.5 / second class upper / WAM 70%, and less than two years of full-time work after graduation.',
+      },
+      {
+        stage: 'aptitude_test',
+        note: 'A virtual cognitive assessment in May to July, then a personality assessment in July.',
+      },
+      {
+        stage: 'video_interview',
+        note: 'A virtual interview in May to July. The page does not say whether it is live or pre-recorded.',
+      },
+      {
+        stage: 'panel_interview',
+        note: 'An in-person panel interview in July.',
+      },
+      {
+        stage: 'assessment_centre',
+        note: 'An in-person assessment centre in August. Onboarding is listed as September.',
+      },
+    ],
+    typicalProcessWeeks: 16,
+    sourceUrl: 'https://www.corporate.celcomdigi.com/company/young-talent-programme',
+    dataConfidence: 'verified',
+    applicationCycle: 'seasonal',
+    closesOn: null,
+    checkedOn: CHECKED_ON,
+  },
+  {
+    id: 'pwc-malaysia-graduate-programme',
+    name: 'Graduate roles',
+    employer: 'PwC Malaysia',
+    sector: 'consulting',
+    cities: ['Kuala Lumpur'],
+    country: 'MY',
+    opensMonth: 1,
+    closesMonth: 12,
+    minCGPA: null,
+    degreeFields: ANY_FIELD,
+    citizenshipRequired: 'any',
+    visaSponsored: false,
+    stages: [
+      {
+        stage: 'online_application',
+        note: 'The graduates page lists several early-career routes (including Aspiring Accountants, Tax Management Trainee, Risk Services, Junior Xplorer, and Earn While You Learn) rather than one named scheme. Some streams welcome any discipline. The page does not publish a CGPA cut-off or a single closing date.',
+      },
+    ],
+    typicalProcessWeeks: 8,
+    sourceUrl: 'https://www.pwc.com/my/en/careers/graduates-non-graduates.html',
+    dataConfidence: 'verified',
+    applicationCycle: 'rolling',
+    closesOn: null,
     checkedOn: CHECKED_ON,
   },
 ];

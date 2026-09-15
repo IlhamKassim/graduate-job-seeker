@@ -9,6 +9,7 @@ import { StageTimeline } from '@/components/StageTimeline';
 import { ProgramEligibility } from '@/components/ProgramEligibility';
 import { ProgramViewTracker } from '@/components/ProgramViewTracker';
 import { ConfidenceChip } from '@/components/ConfidenceChip';
+import { programmeDescription, programmeLead, programmeTitle } from '@/lib/seo';
 import { TESTID } from '@/lib/testids';
 
 export function generateStaticParams() {
@@ -22,10 +23,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const program = PROGRAMS.find((entry) => entry.id === id);
-  if (!program) return { title: 'Programme not found' };
+  if (!program) return { title: 'Programme not found', robots: { index: false, follow: false } };
+  const verified = program.dataConfidence === 'verified';
   return {
-    title: `${program.employer} — ${program.name}`,
-    description: `What the ${program.employer} ${program.name} puts applicants through, and when its window opens.${program.dataConfidence === 'verified' ? '' : ' Sample data.'}`,
+    title: programmeTitle(program),
+    description: programmeDescription(program),
+    robots: verified ? { index: true, follow: true } : { index: false, follow: false },
+    alternates: verified ? { canonical: `/program/${program.id}/` } : undefined,
   };
 }
 
@@ -61,6 +65,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ id: st
               : monthRangeLabel(program.opensMonth, program.closesMonth)}
             {program.checkedOn ? ` · checked ${program.checkedOn}` : ''}
           </span>
+        </p>
+        <p className="mt-4 max-w-[62ch] text-[0.9375rem] leading-relaxed text-ink-80">
+          {programmeLead(program)}
         </p>
       </header>
 

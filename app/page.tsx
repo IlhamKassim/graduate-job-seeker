@@ -20,7 +20,9 @@ export default function LandingPage() {
             </p>
             <p>
               Answer seven questions once. The default shortlist is a Malaysia slice checked
-              against employer pages. Samples stay hidden until you ask.
+              against employer pages. A closing-soon strip appears when a checked seasonal window
+              has a published close date in the next two weeks, or is in its last published month.
+              Samples stay hidden until you ask.
             </p>
           </div>
         </div>

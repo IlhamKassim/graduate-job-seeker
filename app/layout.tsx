@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
-import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE } from '@/lib/config';
+import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE, PUBLIC_ORIGIN } from '@/lib/config';
 import { Masthead } from '@/components/Masthead';
 import { UnverifiedBanner } from '@/components/UnverifiedBanner';
 import { Colophon } from '@/components/Colophon';
@@ -26,6 +26,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(PUBLIC_ORIGIN),
   title: {
     default: `${APP_NAME} — ${APP_TAGLINE}`,
     template: `%s — ${APP_NAME}`,

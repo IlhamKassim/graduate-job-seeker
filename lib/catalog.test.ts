@@ -21,6 +21,8 @@ describe('catalog', () => {
     const ids = PROGRAMS.map((program) => program.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(VERIFIED_PROGRAMS_IN_CATALOG.every((program) => program.checkedOn)).toBe(true);
+    expect(VERIFIED_PROGRAMS_IN_CATALOG.every((program) => program.country === 'MY')).toBe(true);
     expect(SAMPLE_PROGRAMS_IN_CATALOG.every((program) => program.checkedOn === null)).toBe(true);
+    expect(VERIFIED_COUNT).toBe(10);
   });
 });

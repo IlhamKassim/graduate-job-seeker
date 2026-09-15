@@ -19,6 +19,17 @@ export const DATA_SLICE = {
 } as const;
 
 /**
+ * Public origin for canonical URLs, the sitemap, and links in mail when the
+ * request has no Host header. Production first; preview builds still work.
+ */
+export const PUBLIC_ORIGIN = (
+  process.env.RETURN_PUBLIC_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : 'https://graduate-job-seeker.vercel.app')
+).replace(/\/$/, '');
+
+/**
  * True while any sample record remains in the catalogue. The honesty banner
  * stays available; samples are hidden until the student asks to see them.
  */

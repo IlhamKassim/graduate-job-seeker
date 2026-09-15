@@ -36,6 +36,11 @@ export interface Program {
   dataConfidence: DataConfidence;
   /** Seasonal uses opensMonth/closesMonth. Rolling accepts applications year-round. */
   applicationCycle: 'seasonal' | 'rolling';
+  /**
+   * ISO date (YYYY-MM-DD) the employer published as this cycle's close.
+   * Null when they only named months, the cycle is rolling, or the record is a sample.
+   */
+  closesOn: string | null;
   /** ISO date (YYYY-MM-DD) the record was checked against sourceUrl. Null on samples. */
   checkedOn: string | null;
 }
