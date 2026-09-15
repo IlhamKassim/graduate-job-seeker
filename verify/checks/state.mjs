@@ -911,4 +911,43 @@ export const stateChecks = [
       });
     },
   },
+
+  {
+    id: 'B13',
+    group: 'B',
+    title: 'A waitlist deletion can be requested without revealing whether the address is listed',
+    async run(t) {
+      const session = await t.session({ profile: null, events: [], waitlist: [] });
+      await t.open(session, ROUTES.deleteWaitlist);
+      const page = session.page;
+
+      t.require(await exists(page, TESTID.deleteForm), 'selector not found', {
+        selector: tid(TESTID.deleteForm),
+        route: ROUTES.deleteWaitlist,
+        expected: 'a form that asks for the waitlist address',
+      });
+
+      const unknown = 'not-on-the-list@example.com';
+      await setField(page, TESTID.deleteEmail, unknown);
+      const submit = loc(page, TESTID.deleteSubmit).first();
+      t.require(await submit.count(), 'selector not found', { selector: tid(TESTID.deleteSubmit) });
+      await submit.click();
+      await loc(page, TESTID.deleteDone)
+        .first()
+        .waitFor({ state: 'visible', timeout: 8000 })
+        .catch(() => {});
+
+      t.expect(await exists(page, TESTID.deleteDone), 'an unknown address did not produce the same done state', {
+        selector: tid(TESTID.deleteDone),
+        observed: 'absent',
+        expected: 'present, without saying the address is missing',
+      });
+      const copy = ((await textOf(page, TESTID.deleteDone)) || '').toLowerCase();
+      t.expect(!/not on the list|unknown|no such/.test(copy), 'the done state reveals that the address is missing', {
+        selector: tid(TESTID.deleteDone),
+        observed: `"${copy}"`,
+        expected: 'copy that would be true whether or not the address is stored',
+      });
+    },
+  },
 ];

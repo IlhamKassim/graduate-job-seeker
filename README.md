@@ -14,7 +14,7 @@ Out until a later phase: full accounts, OAuth, scrapers, LLM matching, payments,
 
 - **Specific:** students in MY (and visitors from SG) can finish the seven questions and see only programmes we have checked against an employer page, unless they turn samples on.
 - **Measurable:** 20 waitlist addresses from people who also submitted a profile, plus enough `/debug` session logs to see whether they opened a programme and the calendar.
-- **Achievable:** ten checked MY programmes as of 2026-09-15 (Grab, CelcomDigi and PwC added once their own pages named a window or a rolling scheme; Maybank GMAP and Bank Negara KGP stayed samples because the live pages did not publish a current apply window we were willing to treat as a fact).
+- **Achievable:** eleven checked MY programmes as of 2026-09-15 (Grab, CelcomDigi, PwC, and RHB’s Management Associate Program from the employer Workday posting; Maybank GMAP and Bank Negara KGP stayed samples because the live pages did not publish a current apply window we were willing to treat as a fact).
 - **Relevant:** prove demand for a register of windows, not a new jobs board.
 - **Time-bound:** two weeks of facilitated sessions after this slice is live.
 
@@ -65,7 +65,7 @@ Waitlist POST requires a consent tick, a plausible address, and an empty honeypo
 
 The seven answers still live in the browser. After a consented waitlist join we also store that profile on the server so we can email a copy of the checked shortlist and a one-time link (`/return/<token>/`) that restores those answers on another phone. The email does not include CGPA. The link expires in seven days and cannot be reused.
 
-`/return/` will send another link without saying whether the address is on the list.
+`/return/` will send another link without saying whether the address is on the list. `/delete/` is the same pattern for erasing the address and the stored answers.
 
 Set `RESEND_API_KEY` and `RETURN_FROM_EMAIL` to actually send. Without them, the operator dump at `/api/capture` still stores the outbound body (including the link) so you can forward it during the pilot. A Monday cron at `/api/cron/reminders/` writes when a saved seasonal window is opening soon or in its last month; it needs `CRON_SECRET`. Rolling programmes are skipped so year-round schemes do not spam every week.
 
@@ -88,6 +88,7 @@ Events you should expect if the session was used properly:
 | `calendar_viewed` | they opened `/calendar` |
 | `waitlist_joined` | they left an address on the shortlist |
 | `return_visit` | they opened an emailed shortlist link |
+| `waitlist_deleted` | they confirmed a deletion link |
 
 The JSON is the source of truth. The readable list above it is just for scanning.
 

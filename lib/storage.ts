@@ -41,7 +41,8 @@ export type EventType =
   | 'waitlist_joined'
   | 'fit_breakdown_expanded'
   | 'debug_viewed'
-  | 'return_visit';
+  | 'return_visit'
+  | 'waitlist_deleted';
 
 type Listener = () => void;
 

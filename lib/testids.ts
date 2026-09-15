@@ -44,6 +44,10 @@ export const TESTID = {
   returnEmail: 'return-email',
   returnSubmit: 'return-submit',
   returnDone: 'return-done',
+  deleteForm: 'delete-form',
+  deleteEmail: 'delete-email',
+  deleteSubmit: 'delete-submit',
+  deleteDone: 'delete-done',
 
   // Program detail
   stageTimeline: 'stage-timeline',

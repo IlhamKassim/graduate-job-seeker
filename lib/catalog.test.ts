@@ -23,6 +23,13 @@ describe('catalog', () => {
     expect(VERIFIED_PROGRAMS_IN_CATALOG.every((program) => program.checkedOn)).toBe(true);
     expect(VERIFIED_PROGRAMS_IN_CATALOG.every((program) => program.country === 'MY')).toBe(true);
     expect(SAMPLE_PROGRAMS_IN_CATALOG.every((program) => program.checkedOn === null)).toBe(true);
-    expect(VERIFIED_COUNT).toBe(10);
+    expect(VERIFIED_COUNT).toBe(11);
+    const rhb = VERIFIED_PROGRAMS_IN_CATALOG.find(
+      (program) => program.id === 'rhb-banking-group-graduate-programme',
+    );
+    expect(rhb?.name).toBe('Management Associate Program');
+    expect(rhb?.closesOn).toBe('2026-09-30');
+    expect(rhb?.minCGPA).toBe(3.6);
+    expect(SAMPLE_PROGRAMS_IN_CATALOG.some((program) => program.id === rhb?.id)).toBe(false);
   });
 });

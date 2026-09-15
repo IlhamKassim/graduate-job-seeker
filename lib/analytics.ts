@@ -84,6 +84,10 @@ export function trackReturnVisit(): void {
   record('return_visit', { restored: true });
 }
 
+export function trackWaitlistDeleted(): void {
+  record('waitlist_deleted', { deleted: true });
+}
+
 export const EVENT_LABEL: Record<EventType, string> = {
   profile_submitted: 'Profile submitted',
   shortlist_viewed: 'Shortlist viewed',
@@ -94,4 +98,5 @@ export const EVENT_LABEL: Record<EventType, string> = {
   fit_breakdown_expanded: 'Fit breakdown expanded',
   debug_viewed: 'Debug viewed',
   return_visit: 'Returned with emailed shortlist',
+  waitlist_deleted: 'Waitlist address deleted',
 };

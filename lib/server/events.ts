@@ -8,6 +8,7 @@ const ALLOWED = new Set([
   'fit_breakdown_expanded',
   'debug_viewed',
   'return_visit',
+  'waitlist_deleted',
 ]);
 
 export function isAllowedEventType(type: string): boolean {
@@ -39,6 +40,9 @@ export function sanitiseEventPayload(
   }
   if (type === 'return_visit') {
     return { restored: true };
+  }
+  if (type === 'waitlist_deleted') {
+    return { deleted: true };
   }
   const { email, cgpa, ...rest } = payload;
   void email;

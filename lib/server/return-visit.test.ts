@@ -69,6 +69,7 @@ describe('composeReturnEmail', () => {
       ],
     });
     expect(mail.text).toContain(`https://example.com/return/${token}/`);
+    expect(mail.text).toContain('/delete/');
     expect(mail.text).toContain('PETRONAS');
     expect(mail.text).not.toMatch(/\b3\.\d{2}\b/i);
   });

@@ -88,6 +88,18 @@ describe('isClosingSoon', () => {
     expect(isClosingSoon(grab, new Date(2026, 3, 20))).toBe(false);
   });
 
+  it('does not treat a 15-day published close as closing soon', () => {
+    const rhb = programFixture({
+      applicationCycle: 'seasonal',
+      opensMonth: 4,
+      closesMonth: 9,
+      closesOn: '2026-09-30',
+    });
+    expect(isClosingSoon(rhb, new Date(2026, 8, 15))).toBe(false);
+    expect(isClosingSoon(rhb, new Date(2026, 8, 16))).toBe(true);
+    expect(closingSoonInfo(rhb, new Date(2026, 8, 16))?.daysLeft).toBe(14);
+  });
+
   it('falls back to the last published month when there is no calendar date', () => {
     const seasonal = programFixture({
       applicationCycle: 'seasonal',

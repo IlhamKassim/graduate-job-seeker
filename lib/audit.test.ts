@@ -34,6 +34,7 @@ describe('auditWindows', () => {
     expect(listing).toMatch(/grab-cfo-graduate-programme/);
     expect(listing).toMatch(/celcomdigi-graduate-programme/);
     expect(listing).toMatch(/pwc-malaysia-graduate-programme/);
+    expect(listing).toMatch(/rhb-banking-group-graduate-programme/);
     expect(rows.every((row) => row.due === false)).toBe(true);
   });
 });

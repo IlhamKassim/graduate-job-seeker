@@ -118,47 +118,6 @@ const SAMPLES: SampleDraft[] = [
     dataConfidence: 'unverified',
   },
   {
-    id: 'rhb-banking-group-graduate-programme',
-    name: 'Graduate Programme',
-    employer: 'RHB Banking Group',
-    sector: 'banking',
-    cities: ['Kuala Lumpur', 'Johor'],
-    country: 'MY',
-    opensMonth: 3,
-    closesMonth: 5,
-    minCGPA: 3.0,
-    degreeFields: [
-      'Accounting',
-      'Actuarial Science',
-      'Business Administration',
-      'Economics',
-      'Finance',
-    ],
-    citizenshipRequired: 'MY',
-    visaSponsored: false,
-    stages: [
-      {
-        stage: 'online_application',
-        note: 'A straightforward form with your transcript and CV. Keep the CV to what a bank cares about — numbers you were responsible for, and people you worked with.',
-      },
-      {
-        stage: 'aptitude_test',
-        note: 'Numerical and verbal reasoning online. This is the usual first filter, and a weak numerical score is the most common place applications stop.',
-      },
-      {
-        stage: 'panel_interview',
-        note: 'A panel from the business line you applied to. Competency questions on teamwork and pressure, and why retail banking rather than anything else.',
-      },
-      {
-        stage: 'final_interview',
-        note: 'A shorter conversation with a senior manager. More about fit and whether you will still be here in three years than about technical knowledge.',
-      },
-    ],
-    typicalProcessWeeks: 10,
-    sourceUrl: 'https://www.rhbgroup.com/others/career/index.html',
-    dataConfidence: 'unverified',
-  },
-  {
     id: 'dbs-bank-graduate-associate-programme',
     name: 'Graduate Associate Programme',
     employer: 'DBS Bank',

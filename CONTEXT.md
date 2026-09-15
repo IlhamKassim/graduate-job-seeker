@@ -37,7 +37,7 @@ The eligible programmes for this profile, ranked by fit, plus the ineligible one
 _Avoid_: Wishlist, bookmarks, applications
 
 **Waitlist**:
-An email address left after the shortlist, with consent to be sent that shortlist, a one-time restore link, and a note when a saved window is about to open. Not a marketing list.
+An email address left after the shortlist, with consent to be sent that shortlist, a one-time restore link, and a note when a saved window is about to open. Deletion is the same loop on `/delete/`: a one-time link, without confirming whether the address is listed. Not a marketing list.
 _Avoid_: Newsletter, subscribers, leads, account
 
 **Capture**:

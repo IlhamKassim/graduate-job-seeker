@@ -56,10 +56,13 @@ export default function PrivacyPage() {
       </h2>
       <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-80">
         Waitlist rows stay until you ask for deletion, or until we shut the list down. A restore
-        link works once and expires after seven days. Event rows are working notes for this
-        pilot and should not be treated as a permanent file. To delete an address and the
-        answers stored with it, email the operator named on the GitHub repository for this
-        project with the address you used.
+        or deletion link works once and expires after seven days. Event rows are working notes
+        for this pilot and should not be treated as a permanent file. To delete an address and
+        the answers stored with it, open the{' '}
+        <Link href="/delete/" className="text-link">
+          deletion page
+        </Link>
+        . We email a confirmation link. That page does not say whether the address was listed.
       </p>
     </div>
   );
