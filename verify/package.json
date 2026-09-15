@@ -1,0 +1,13 @@
+{
+  "name": "langkah-verify",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Playwright acceptance + mobile verification harness for the Langkah pilot.",
+  "scripts": {
+    "verify": "node verify.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.55.0"
+  }
+}
