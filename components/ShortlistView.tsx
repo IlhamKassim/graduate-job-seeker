@@ -6,7 +6,7 @@ import type { Sector, WindowStatus } from '@/types';
 import { catalog, SAMPLE_COUNT } from '@/lib/catalog';
 import { MONTH_LONG } from '@/data/taxonomy';
 import { scoreAll } from '@/lib/fit';
-import { resolveWindow } from '@/lib/windows';
+import { resolveWindow, closingSoonInfo } from '@/lib/windows';
 import { trackFilterUsed, trackShortlistViewed } from '@/lib/analytics';
 import { useNow, useProfile, useSamplesIncluded } from '@/lib/hooks';
 import { setSamplesIncluded } from '@/lib/storage';
@@ -14,6 +14,7 @@ import { FilterBar, NO_FILTERS, type Filters } from '@/components/FilterBar';
 import { ShortlistRow } from '@/components/ShortlistRow';
 import { IneligibleSection } from '@/components/IneligibleSection';
 import { EmailCapture } from '@/components/EmailCapture';
+import { ClosingSoonStrip } from '@/components/ClosingSoonStrip';
 import { TESTID } from '@/lib/testids';
 
 type SortKey = 'fit' | 'soonest';
@@ -102,6 +103,16 @@ export function ShortlistView() {
     (entry) => entry.window?.status === 'opening_soon',
   ).length;
 
+  const closingSoon = useMemo(() => {
+    if (!now) return [];
+    return withWindows.flatMap((entry) => {
+      if (entry.program.dataConfidence !== 'verified') return [];
+      const info = closingSoonInfo(entry.program, now);
+      if (!info) return [];
+      return [{ program: entry.program, ...info }];
+    });
+  }, [withWindows, now]);
+
   // ---- Before the browser has read localStorage -----------------------------
 
   if (!ready) {
@@ -187,6 +198,8 @@ export function ShortlistView() {
           </p>
         </div>
       </header>
+
+      <ClosingSoonStrip items={closingSoon} />
 
       {nothingEligible ? (
         <EmptyState

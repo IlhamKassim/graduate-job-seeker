@@ -38,6 +38,8 @@ export const TESTID = {
   emailDone: 'email-done',
   emailConsent: 'email-consent',
   filterSamples: 'filter-samples',
+  closingSoon: 'closing-soon',
+  closingSoonItem: 'closing-soon-item',
   returnForm: 'return-form',
   returnEmail: 'return-email',
   returnSubmit: 'return-submit',

@@ -20,6 +20,7 @@ export function programFixture(overrides: Partial<Program> = {}): Program {
     sourceUrl: 'https://example.com/programme',
     dataConfidence: 'unverified',
     applicationCycle: 'seasonal',
+    closesOn: null,
     checkedOn: null,
     ...overrides,
   };

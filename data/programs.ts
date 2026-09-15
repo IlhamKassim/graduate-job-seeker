@@ -1,9 +1,10 @@
 import type { Program } from '@/types';
 import { VERIFIED_PROGRAMS } from '@/data/verified';
 
-type SampleDraft = Omit<Program, 'applicationCycle' | 'checkedOn'> & {
+type SampleDraft = Omit<Program, 'applicationCycle' | 'checkedOn' | 'closesOn'> & {
   applicationCycle?: Program['applicationCycle'];
   checkedOn?: string | null;
+  closesOn?: string | null;
 };
 
 /**
@@ -1411,6 +1412,7 @@ function hydrate(sample: SampleDraft): Program {
   return {
     ...sample,
     applicationCycle: sample.applicationCycle ?? 'seasonal',
+    closesOn: sample.closesOn ?? null,
     checkedOn: sample.checkedOn ?? null,
   };
 }

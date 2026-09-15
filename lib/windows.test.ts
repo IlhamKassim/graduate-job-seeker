@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { monthRangeLabel, resolveWindow, windowMonths, windowWraps } from '@/lib/windows';
+import { calendarDayDiff, parseIsoDate } from '@/lib/iso-date';
+import {
+  closingSoonInfo,
+  isClosingSoon,
+  monthRangeLabel,
+  resolveWindow,
+  windowMonths,
+  windowWraps,
+} from '@/lib/windows';
 import { programFixture } from '@/lib/test-fixtures';
 
 describe('windowMonths', () => {
@@ -54,5 +62,58 @@ describe('resolveWindow', () => {
     expect(resolveWindow(wrapping, new Date(2027, 0, 1)).status).toBe('open');
     expect(resolveWindow(wrapping, new Date(2026, 5, 1)).status).toBe('closed');
     expect(monthRangeLabel(11, 2)).toBe('November to February');
+  });
+});
+
+describe('parseIsoDate', () => {
+  it('rejects impossible calendar dates', () => {
+    expect(parseIsoDate('2026-05-15')?.getDate()).toBe(15);
+    expect(parseIsoDate('2026-02-30')).toBeNull();
+    expect(parseIsoDate('not-a-date')).toBeNull();
+  });
+});
+
+describe('isClosingSoon', () => {
+  it('uses a published close date when the employer named one', () => {
+    const grab = programFixture({
+      applicationCycle: 'seasonal',
+      opensMonth: 4,
+      closesMonth: 5,
+      closesOn: '2026-05-15',
+    });
+    expect(isClosingSoon(grab, new Date(2026, 4, 8))).toBe(true);
+    expect(closingSoonInfo(grab, new Date(2026, 4, 8))?.daysLeft).toBe(7);
+    expect(isClosingSoon(grab, new Date(2026, 4, 15))).toBe(true);
+    expect(isClosingSoon(grab, new Date(2026, 4, 16))).toBe(false);
+    expect(isClosingSoon(grab, new Date(2026, 3, 20))).toBe(false);
+  });
+
+  it('falls back to the last published month when there is no calendar date', () => {
+    const seasonal = programFixture({
+      applicationCycle: 'seasonal',
+      opensMonth: 5,
+      closesMonth: 7,
+      closesOn: null,
+    });
+    expect(isClosingSoon(seasonal, new Date(2026, 6, 1))).toBe(true);
+    expect(closingSoonInfo(seasonal, new Date(2026, 6, 1))?.lastMonth).toBe(true);
+    expect(isClosingSoon(seasonal, new Date(2026, 5, 1))).toBe(false);
+  });
+
+  it('never warns on a rolling cycle', () => {
+    const rolling = programFixture({
+      applicationCycle: 'rolling',
+      opensMonth: 1,
+      closesMonth: 12,
+      closesOn: null,
+    });
+    expect(isClosingSoon(rolling, new Date(2026, 8, 15))).toBe(false);
+  });
+});
+
+describe('calendarDayDiff', () => {
+  it('counts whole local days', () => {
+    expect(calendarDayDiff(new Date(2026, 4, 8), new Date(2026, 4, 15))).toBe(7);
+    expect(calendarDayDiff(new Date(2026, 4, 15), new Date(2026, 4, 8))).toBe(-7);
   });
 });

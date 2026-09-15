@@ -14,7 +14,7 @@ Out until a later phase: full accounts, OAuth, scrapers, LLM matching, payments,
 
 - **Specific:** students in MY (and visitors from SG) can finish the seven questions and see only programmes we have checked against an employer page, unless they turn samples on.
 - **Measurable:** 20 waitlist addresses from people who also submitted a profile, plus enough `/debug` session logs to see whether they opened a programme and the calendar.
-- **Achievable:** seven checked MY programmes as of 2026-09-15 (not ten: the rest of the intended list did not have a page we were willing to treat as a fact).
+- **Achievable:** ten checked MY programmes as of 2026-09-15 (Grab, CelcomDigi and PwC added once their own pages named a window or a rolling scheme; Maybank GMAP and Bank Negara KGP stayed samples because the live pages did not publish a current apply window we were willing to treat as a fact).
 - **Relevant:** prove demand for a register of windows, not a new jobs board.
 - **Time-bound:** two weeks of facilitated sessions after this slice is live.
 
@@ -48,7 +48,7 @@ This is a Node server on Vercel, not a static `out/` folder.
 
 1. Open the employer's own programme page (not a jobs-board listing).
 2. Copy only what that page states: window, CGPA, cities, citizenship, field, stages, notes.
-3. Add a record in `data/verified.ts` with `dataConfidence: 'verified'`, `sourceUrl` pointing at **that** page, and today's `checkedOn`.
+3. Add a record in `data/verified.ts` with `dataConfidence: 'verified'`, `sourceUrl` pointing at **that** page, and today's `checkedOn`. If the page published a calendar close date, set `closesOn` to that ISO date; otherwise leave it null.
 4. If a field is not on the page, leave it empty or omit the constraint. Do not invent a July window because last year was July.
 
 Leave a record as a sample if you have not checked it. Samples never appear until the student turns them on. The honesty banner stays on the default catalogue until samples are gone.
@@ -118,4 +118,17 @@ GitHub Actions runs typecheck, unit tests, a production build, and the harness o
 ## Sentry
 
 Set `SENTRY_DSN` on Vercel (Production and Preview) when you want API failures on `/api/waitlist`, `/api/events`, and `/api/capture` to show up in Sentry. Without it, those routes still return JSON errors and log to the host. We do not send email or CGPA to Sentry.
+
+## Monthly window audit
+
+The product is window maintenance. Once a month:
+
+```bash
+npm run audit:windows
+```
+
+That prints every verified row, how many days since `checkedOn`, and the source URL. Open each URL. If the window, CGPA or stages moved, edit `data/verified.ts` and set `checkedOn` to today. If the page 404s, cage the row as a sample rather than guessing. Rows older than 32 days are marked `DUE`.
+
+Verified programme pages are in `/sitemap.xml` and are indexed. Sample pages are `noindex`.
+
 
