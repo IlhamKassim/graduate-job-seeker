@@ -37,8 +37,8 @@ The eligible programmes for this profile, ranked by fit, plus the ineligible one
 _Avoid_: Wishlist, bookmarks, applications
 
 **Waitlist**:
-An email address left after the shortlist, with consent to be told when windows are verified or when a saved window opens. Not a marketing list.
-_Avoid_: Newsletter, subscribers, leads
+An email address left after the shortlist, with consent to be sent that shortlist, a one-time restore link, and a note when a saved window is about to open. Not a marketing list.
+_Avoid_: Newsletter, subscribers, leads, account
 
 **Capture**:
 The server-side record of a waitlist join or a product event. Distinct from the browser session log, which still lives on the device.

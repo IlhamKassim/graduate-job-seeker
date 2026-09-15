@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { appendWaitlist } from '@/lib/storage';
+import { appendWaitlist, loadProfile } from '@/lib/storage';
 import { trackWaitlistJoined } from '@/lib/analytics';
 import { CONSENT_VERSION } from '@/lib/config';
 import { TESTID } from '@/lib/testids';
@@ -15,7 +15,7 @@ function newId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export function EmailCapture() {
+export function EmailCapture({ programmeIds }: { programmeIds: string[] }) {
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
   const [honeypot, setHoneypot] = useState('');
@@ -32,7 +32,7 @@ export function EmailCapture() {
       >
         <p className="text-[0.9375rem] leading-relaxed text-ink">
           {serverNote ??
-            'Saved. We will only use this address to tell you when windows are checked or when a window you care about opens.'}
+            'Saved. We emailed that address a copy of this shortlist and a link to open it on another phone.'}
         </p>
       </div>
     );
@@ -48,11 +48,12 @@ export function EmailCapture() {
         id="waitlist-heading"
         className="text-[1.0625rem] font-semibold tracking-[-0.015em] text-ink"
       >
-        Want these windows checked, and a note when one opens?
+        Want this shortlist, and a note when a window is about to open?
       </h2>
       <p className="mt-1.5 max-w-[60ch] text-[0.9375rem] leading-relaxed text-ink-80">
-        Leave an address. We store it to email you when more programmes are verified, or when a
-        window in this register opens. We do not sell it. Read the{' '}
+        Leave an address. We email a copy of the checked programmes you currently clear, a link
+        to open them on another phone, and a note when one of those windows is opening or in its
+        last month. We do not sell the list. Read the{' '}
         <a href="/privacy/" className="text-link">
           privacy note
         </a>
@@ -87,6 +88,8 @@ export function EmailCapture() {
                 consent: true,
                 consentVersion: CONSENT_VERSION,
                 companyWebsite: honeypot,
+                profile: loadProfile(),
+                programmeIds,
               }),
             });
             const result = (await response.json()) as {
@@ -94,6 +97,7 @@ export function EmailCapture() {
               error?: string;
               persisted?: string;
               already?: boolean;
+              mailed?: boolean | null;
             };
             if (!response.ok || !result.ok) {
               setServerNote(
@@ -101,15 +105,23 @@ export function EmailCapture() {
                   ? `${result.error} Your address is still saved in this browser.`
                   : 'We could not reach the server. Your address is still saved in this browser.',
               );
-            } else if (result.persisted === 'file') {
+            } else if (result.already && result.mailed) {
               setServerNote(
-                'Saved on this machine. Production still needs a database before addresses survive a deploy.',
+                'That address is already on the list. We sent a fresh link to open this shortlist.',
               );
             } else if (result.already) {
               setServerNote('That address is already on the list.');
+            } else if (result.mailed) {
+              setServerNote(
+                'Saved. We emailed that address a copy of this shortlist and a link to open it on another phone.',
+              );
+            } else if (result.persisted === 'file') {
+              setServerNote(
+                'Saved on this machine. Mail still needs a sending key, and production still needs a database, before a phone that is not this one can receive the link.',
+              );
             } else {
               setServerNote(
-                'Saved. We will only use this address to tell you when windows are checked or when a window you care about opens.',
+                'Saved. Mail is not sending from this host yet, so the operator still has to forward the shortlist. Your address is on the list.',
               );
             }
           } catch {
@@ -162,7 +174,7 @@ export function EmailCapture() {
             className="btn btn-primary"
             disabled={pending}
           >
-            {pending ? 'Saving…' : 'Keep me posted'}
+            {pending ? 'Saving…' : 'Email me this shortlist'}
           </button>
         </div>
 
@@ -179,8 +191,9 @@ export function EmailCapture() {
           />
           <span className="tick-box" aria-hidden />
           <span id="waitlist-consent-copy" className="text-[0.875rem] leading-snug text-ink">
-            I agree that Langkah may store this address to email me about verified windows and
-            opening dates, and may keep it until I ask for it to be deleted.
+            I agree that Langkah may store this address and the seven answers I just gave, to
+            email me this shortlist, a link to open it again, and a note when a saved window is
+            opening or in its last month, and may keep them until I ask for deletion.
           </span>
         </label>
 

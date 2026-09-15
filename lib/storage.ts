@@ -1,5 +1,5 @@
-import type { Profile, Sector } from '@/types';
-import { CITIES, DEGREE_FIELDS, SECTORS } from '@/data/taxonomy';
+import type { Profile } from '@/types';
+import { parseProfile } from '@/lib/profile';
 
 /**
  * The only module that touches localStorage.
@@ -40,7 +40,8 @@ export type EventType =
   | 'calendar_viewed'
   | 'waitlist_joined'
   | 'fit_breakdown_expanded'
-  | 'debug_viewed';
+  | 'debug_viewed'
+  | 'return_visit';
 
 type Listener = () => void;
 
@@ -105,34 +106,8 @@ export function storageAvailable(): boolean {
 // Profile
 // ---------------------------------------------------------------------------
 
-function isValidProfile(value: unknown): value is Profile {
-  if (!value || typeof value !== 'object') return false;
-  const candidate = value as Partial<Profile>;
-
-  if (typeof candidate.degreeField !== 'string') return false;
-  if (!(DEGREE_FIELDS as readonly string[]).includes(candidate.degreeField)) return false;
-  if (typeof candidate.cgpa !== 'number' || Number.isNaN(candidate.cgpa)) return false;
-  if (candidate.cgpa < 0 || candidate.cgpa > 4) return false;
-  if (typeof candidate.graduationMonth !== 'number') return false;
-  if (candidate.graduationMonth < 1 || candidate.graduationMonth > 12) return false;
-  if (typeof candidate.graduationYear !== 'number') return false;
-  if (!Array.isArray(candidate.preferredCities)) return false;
-  if (!candidate.preferredCities.every((city) => (CITIES as readonly string[]).includes(city))) {
-    return false;
-  }
-  if (!Array.isArray(candidate.sectorsOfInterest)) return false;
-  if (!candidate.sectorsOfInterest.every((sector) => SECTORS.includes(sector as Sector))) {
-    return false;
-  }
-  if (!['MY', 'SG', 'other'].includes(candidate.citizenship as string)) return false;
-  if (typeof candidate.needsVisaSponsorship !== 'boolean') return false;
-
-  return true;
-}
-
 export function loadProfile(): Profile | null {
-  const value = readJson<unknown>(KEY.profile);
-  return isValidProfile(value) ? value : null;
+  return parseProfile(readJson<unknown>(KEY.profile));
 }
 
 export function saveProfile(profile: Profile): boolean {

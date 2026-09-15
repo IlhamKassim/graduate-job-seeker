@@ -80,6 +80,10 @@ export function trackDebugViewed(eventCount: number, waitlistCount: number): voi
   record('debug_viewed', { eventCount, waitlistCount });
 }
 
+export function trackReturnVisit(): void {
+  record('return_visit', { restored: true });
+}
+
 export const EVENT_LABEL: Record<EventType, string> = {
   profile_submitted: 'Profile submitted',
   shortlist_viewed: 'Shortlist viewed',
@@ -89,4 +93,5 @@ export const EVENT_LABEL: Record<EventType, string> = {
   waitlist_joined: 'Waitlist joined',
   fit_breakdown_expanded: 'Fit breakdown expanded',
   debug_viewed: 'Debug viewed',
+  return_visit: 'Returned with emailed shortlist',
 };

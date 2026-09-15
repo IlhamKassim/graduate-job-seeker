@@ -35,10 +35,11 @@ export default function PrivacyPage() {
         What we store if you join the waitlist
       </h2>
       <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-80">
-        If you tick the consent box and submit an address, we store that address, the time, and
-        this consent version. Purpose: email you when more programmes are checked against
-        employer pages, or when a window in this register opens. We do not sell the list or use
-        it for unrelated marketing.
+        If you tick the consent box and submit an address, we store that address, the time, this
+        consent version, and the seven answers you had just given, so we can email you this
+        shortlist, a one-time link to open it on another phone, and a note when a saved window
+        is opening or in its last month. We do not sell the list or use it for unrelated
+        marketing. The email itself does not include your CGPA.
       </p>
 
       <h2 className="mt-8 text-[1.15rem] font-semibold tracking-[-0.02em] text-ink">
@@ -54,10 +55,11 @@ export default function PrivacyPage() {
         How long, and how to ask us to delete
       </h2>
       <p className="mt-2 text-[0.9375rem] leading-relaxed text-ink-80">
-        Waitlist rows stay until you ask for deletion, or until we shut the list down. Event rows
-        are working notes for this pilot and should not be treated as a permanent file. To delete
-        an address, email the operator named on the GitHub repository for this project with the
-        address you used.
+        Waitlist rows stay until you ask for deletion, or until we shut the list down. A restore
+        link works once and expires after seven days. Event rows are working notes for this
+        pilot and should not be treated as a permanent file. To delete an address and the
+        answers stored with it, email the operator named on the GitHub repository for this
+        project with the address you used.
       </p>
     </div>
   );
