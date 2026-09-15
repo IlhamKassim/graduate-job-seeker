@@ -86,6 +86,7 @@ describe('POST /api/waitlist', () => {
     expect(listed.outbound).toHaveLength(1);
     expect(listed.outbound[0]?.kind).toBe('return_link');
     expect(listed.outbound[0]?.body).toContain('/return/');
+    expect(listed.outbound[0]?.body).toContain('/delete/');
     expect(listed.outbound[0]?.body).not.toMatch(/\b3\.60\b/);
   });
 

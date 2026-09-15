@@ -49,6 +49,11 @@ export function Colophon() {
                 </Link>
               </li>
               <li>
+                <Link href="/delete/" className="inline-flex min-h-11 items-center text-slate underline-offset-4 hover:text-ink">
+                  Delete waitlist address
+                </Link>
+              </li>
+              <li>
                 <Link href="/privacy/" className="inline-flex min-h-11 items-center text-slate underline-offset-4 hover:text-ink">
                   Privacy
                 </Link>

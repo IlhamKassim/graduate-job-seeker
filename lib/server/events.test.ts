@@ -36,6 +36,12 @@ describe('sanitiseEventPayload', () => {
     });
   });
 
+  it('reduces a waitlist deletion to a boolean', () => {
+    expect(
+      sanitiseEventPayload('waitlist_deleted', { deleted: true, email: 'student@example.com' }),
+    ).toEqual({ deleted: true });
+  });
+
   it('strips email and CGPA from every other allowed type', () => {
     const cleaned = sanitiseEventPayload('program_detail_opened', {
       programId: 'cimb-group-the-complete-banker',
@@ -47,6 +53,7 @@ describe('sanitiseEventPayload', () => {
 
   it('rejects event names the product does not emit', () => {
     expect(isAllowedEventType('profile_submitted')).toBe(true);
+    expect(isAllowedEventType('waitlist_deleted')).toBe(true);
     expect(isAllowedEventType('password_reset')).toBe(false);
   });
 });

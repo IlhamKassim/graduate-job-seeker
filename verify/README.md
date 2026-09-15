@@ -26,7 +26,7 @@ Exits `0` when every check passes. Writes `report.json` and screenshots into `--
 | id | proves |
 |---|---|
 | A | the ten acceptance criteria in the brief |
-| B | empty states, filters, form errors, wrapping windows, email capture, return visit, analytics |
+| B | empty states, filters, form errors, wrapping windows, email capture, return visit, waitlist deletion, analytics |
 | C | 375×812 reflow, type size, touch targets, the primary path by tap |
 | D | keyboard, names, headings, reduced motion, contrast |
 

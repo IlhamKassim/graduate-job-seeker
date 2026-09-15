@@ -398,4 +398,31 @@ export const VERIFIED_PROGRAMS: Program[] = [
     closesOn: null,
     checkedOn: CHECKED_ON,
   },
+  {
+    id: 'rhb-banking-group-graduate-programme',
+    name: 'Management Associate Program',
+    employer: 'RHB Banking Group',
+    sector: 'banking',
+    cities: ['Kuala Lumpur'],
+    country: 'MY',
+    opensMonth: 4,
+    closesMonth: 9,
+    minCGPA: 3.6,
+    degreeFields: ANY_FIELD,
+    citizenshipRequired: 'MY',
+    visaSponsored: false,
+    stages: [
+      {
+        stage: 'online_application',
+        note: 'Apply on RHB’s careers posting (JR005858). Malaysian citizens, any academic discipline, CGPA 3.6 or equivalent. The posting was dated 24 April 2026 and lists a close of 30 September 2026. Only shortlisted candidates are notified. Later stages are not named.',
+      },
+    ],
+    typicalProcessWeeks: 8,
+    sourceUrl:
+      'https://rhb.wd102.myworkdayjobs.com/en-US/RHBExternalCareerSite/job/Kuala-Lumpur/Management-Associate-Program_JR005858',
+    dataConfidence: 'verified',
+    applicationCycle: 'seasonal',
+    closesOn: '2026-09-30',
+    checkedOn: CHECKED_ON,
+  },
 ];

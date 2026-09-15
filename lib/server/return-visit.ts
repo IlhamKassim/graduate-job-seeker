@@ -83,7 +83,7 @@ export function composeReturnEmail(input: {
     'This is not an offer of a job. Windows still move. Open the employer page before you act.',
     'This message does not include the seven answers you typed. The link restores them on that device so the shortlist can be rebuilt.',
     '',
-    'If you did not ask for this, ignore it. To delete the address, email the operator named on the GitHub repository for this project.',
+    'If you did not ask for this, ignore it. To delete the address, open /delete/ on this site.',
   ].join('\n');
   return { subject: `Your ${APP_NAME} shortlist`, text };
 }
@@ -103,7 +103,7 @@ export function composeReminderEmail(input: {
     url,
     '',
     'This is not an offer of a job. Open the employer page before you act.',
-    'If you did not ask for this, ignore it.',
+    'If you did not ask for this, ignore it. To delete the address, open /delete/ on this site.',
   ].join('\n');
   return { subject: `A window on your ${APP_NAME} shortlist is moving`, text };
 }
@@ -122,6 +122,7 @@ export async function issueReturnLink(
     at: now.toISOString(),
     expiresAt: new Date(now.getTime() + MAGIC_LINK_TTL_MS).toISOString(),
     usedAt: null,
+    purpose: 'return',
   });
   const url = `${origin}/return/${token}/`;
   const listed = lines ?? shortlistLines((await getWaitlistByEmail(email))?.programmeIds ?? []);

@@ -28,11 +28,12 @@ export interface CaptureMagicLinkRow {
   at: string;
   expiresAt: string;
   usedAt: string | null;
+  purpose: 'return' | 'delete';
 }
 
 export interface CaptureOutboundRow {
   id: string;
-  kind: 'return_link' | 'window_reminder';
+  kind: 'return_link' | 'window_reminder' | 'deletion_link';
   to: string;
   subject: string;
   body: string;
@@ -69,6 +70,20 @@ function eventsWithinRetention(events: CaptureEventRow[], now = Date.now()): Cap
     if (Number.isNaN(ts)) return true;
     return ts >= cutoff;
   });
+}
+
+function normaliseLink(
+  row: Partial<CaptureMagicLinkRow> &
+    Pick<CaptureMagicLinkRow, 'tokenHash' | 'email' | 'at' | 'expiresAt'>,
+): CaptureMagicLinkRow {
+  return {
+    tokenHash: row.tokenHash,
+    email: row.email,
+    at: row.at,
+    expiresAt: row.expiresAt,
+    usedAt: typeof row.usedAt === 'string' ? row.usedAt : null,
+    purpose: row.purpose === 'delete' ? 'delete' : 'return',
+  };
 }
 
 function knownProgramIds(): string[] {
@@ -115,7 +130,19 @@ async function readFileStore(): Promise<CaptureFile> {
           )
         : [],
       events: Array.isArray(parsed.events) ? parsed.events : [],
-      links: Array.isArray(parsed.links) ? parsed.links : [],
+      links: Array.isArray(parsed.links)
+        ? parsed.links.flatMap((row) => {
+            if (
+              typeof row.tokenHash !== 'string' ||
+              typeof row.email !== 'string' ||
+              typeof row.at !== 'string' ||
+              typeof row.expiresAt !== 'string'
+            ) {
+              return [];
+            }
+            return [normaliseLink(row)];
+          })
+        : [],
       outbound: Array.isArray(parsed.outbound) ? parsed.outbound : [],
     };
   } catch {
@@ -158,9 +185,11 @@ async function ensurePostgres() {
       email TEXT NOT NULL,
       at TIMESTAMPTZ NOT NULL,
       expires_at TIMESTAMPTZ NOT NULL,
-      used_at TIMESTAMPTZ
+      used_at TIMESTAMPTZ,
+      purpose TEXT NOT NULL DEFAULT 'return'
     )
   `;
+  await sql`ALTER TABLE langkah_magic_links ADD COLUMN IF NOT EXISTS purpose TEXT NOT NULL DEFAULT 'return'`;
   await sql`
     CREATE TABLE IF NOT EXISTS langkah_outbound (
       id TEXT PRIMARY KEY,
@@ -322,8 +351,8 @@ export async function saveMagicLink(row: CaptureMagicLinkRow): Promise<void> {
   if (databaseUrl()) {
     const sql = await ensurePostgres();
     await sql`
-      INSERT INTO langkah_magic_links (token_hash, email, at, expires_at, used_at)
-      VALUES (${row.tokenHash}, ${row.email}, ${row.at}, ${row.expiresAt}, ${row.usedAt})
+      INSERT INTO langkah_magic_links (token_hash, email, at, expires_at, used_at, purpose)
+      VALUES (${row.tokenHash}, ${row.email}, ${row.at}, ${row.expiresAt}, ${row.usedAt}, ${row.purpose})
     `;
     return;
   }
@@ -332,7 +361,11 @@ export async function saveMagicLink(row: CaptureMagicLinkRow): Promise<void> {
   await writeFileStore(store);
 }
 
-export async function consumeMagicLink(tokenHash: string, now = new Date()): Promise<string | null> {
+export async function consumeMagicLink(
+  tokenHash: string,
+  now = new Date(),
+  purpose: CaptureMagicLinkRow['purpose'] = 'return',
+): Promise<string | null> {
   const nowIso = now.toISOString();
   if (databaseUrl()) {
     const sql = await ensurePostgres();
@@ -342,18 +375,39 @@ export async function consumeMagicLink(tokenHash: string, now = new Date()): Pro
       WHERE token_hash = ${tokenHash}
         AND used_at IS NULL
         AND expires_at > ${nowIso}
+        AND COALESCE(purpose, 'return') = ${purpose}
       RETURNING email
     `) as Array<{ email: string }>;
     return rows[0]?.email ?? null;
   }
   const store = await readFileStore();
-  const row = store.links.find((entry) => entry.tokenHash === tokenHash);
+  const row = store.links.find((entry) => entry.tokenHash === tokenHash && entry.purpose === purpose);
   if (!row) return null;
   if (row.usedAt) return null;
   if (Date.parse(row.expiresAt) <= now.getTime()) return null;
   row.usedAt = nowIso;
   await writeFileStore(store);
   return row.email;
+}
+
+export async function deleteWaitlistByEmail(email: string): Promise<boolean> {
+  const needle = email.toLowerCase();
+  if (databaseUrl()) {
+    const sql = await ensurePostgres();
+    const rows = (await sql`
+      DELETE FROM langkah_waitlist WHERE lower(email) = ${needle} RETURNING id
+    `) as Array<{ id: string }>;
+    await sql`DELETE FROM langkah_magic_links WHERE lower(email) = ${needle}`;
+    await sql`DELETE FROM langkah_outbound WHERE lower(to_email) = ${needle}`;
+    return rows.length > 0;
+  }
+  const store = await readFileStore();
+  const before = store.waitlist.length;
+  store.waitlist = store.waitlist.filter((row) => row.email.toLowerCase() !== needle);
+  store.links = store.links.filter((row) => row.email.toLowerCase() !== needle);
+  store.outbound = store.outbound.filter((row) => row.to.toLowerCase() !== needle);
+  await writeFileStore(store);
+  return store.waitlist.length < before;
 }
 
 export async function appendOutbound(row: CaptureOutboundRow): Promise<void> {
@@ -440,7 +494,9 @@ export async function listCapture(): Promise<CaptureFile> {
     const outbound: CaptureOutboundRow[] = outboundRaw.flatMap((row) => {
       if (
         typeof row.id !== 'string' ||
-        (row.kind !== 'return_link' && row.kind !== 'window_reminder') ||
+        (row.kind !== 'return_link' &&
+          row.kind !== 'window_reminder' &&
+          row.kind !== 'deletion_link') ||
         typeof row.to !== 'string' ||
         typeof row.subject !== 'string' ||
         typeof row.body !== 'string'
