@@ -14,7 +14,7 @@ Out until a later phase: full accounts, OAuth, scrapers, LLM matching, payments,
 
 - **Specific:** students in MY (and visitors from SG) can finish the seven questions and see only programmes we have checked against an employer page, unless they turn samples on.
 - **Measurable:** 20 waitlist addresses from people who also submitted a profile, plus enough `/debug` session logs to see whether they opened a programme and the calendar.
-- **Achievable:** eleven checked MY programmes as of 2026-09-15 (Grab, CelcomDigi, PwC, and RHB’s Management Associate Program from the employer Workday posting; Maybank GMAP and Bank Negara KGP stayed samples because the live pages did not publish a current apply window we were willing to treat as a fact).
+- **Achievable:** thirteen checked MY programmes as of 2026-09-15 (including RHB’s Management Associate Program, Bank Negara’s Kijang Graduate Programme, and Accenture’s Talent Advancement Program; Maybank GMAP stayed a sample because the live employer page still did not publish a current apply window we were willing to treat as a fact).
 - **Relevant:** prove demand for a register of windows, not a new jobs board.
 - **Time-bound:** two weeks of facilitated sessions after this slice is live.
 

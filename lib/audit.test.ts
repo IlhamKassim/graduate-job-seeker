@@ -35,6 +35,8 @@ describe('auditWindows', () => {
     expect(listing).toMatch(/celcomdigi-graduate-programme/);
     expect(listing).toMatch(/pwc-malaysia-graduate-programme/);
     expect(listing).toMatch(/rhb-banking-group-graduate-programme/);
+    expect(listing).toMatch(/bank-negara-malaysia-graduate-programme/);
+    expect(listing).toMatch(/accenture-graduate-programme/);
     expect(rows.every((row) => row.due === false)).toBe(true);
   });
 });
