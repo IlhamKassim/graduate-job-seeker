@@ -36,6 +36,8 @@ export const TESTID = {
   emailInput: 'email-input',
   emailSubmit: 'email-submit',
   emailDone: 'email-done',
+  emailConsent: 'email-consent',
+  filterSamples: 'filter-samples',
 
   // Program detail
   stageTimeline: 'stage-timeline',

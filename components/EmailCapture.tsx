@@ -169,6 +169,7 @@ export function EmailCapture() {
         <label className="tick-option max-w-[54ch]" htmlFor="waitlist-consent">
           <input
             id="waitlist-consent"
+            data-testid={TESTID.emailConsent}
             type="checkbox"
             checked={consent}
             onChange={(event) => {

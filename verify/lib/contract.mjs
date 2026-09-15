@@ -38,6 +38,8 @@ export const TESTID = {
   emailInput: 'email-input',
   emailSubmit: 'email-submit',
   emailDone: 'email-done',
+  emailConsent: 'email-consent',
+  filterSamples: 'filter-samples',
 
   stageTimeline: 'stage-timeline',
   stageItem: 'stage-item',
@@ -76,6 +78,7 @@ export const STORAGE_KEYS = {
   events: 'langkah.events.v1',
   waitlist: 'langkah.waitlist.v1',
   banner: 'langkah.banner.v1',
+  samples: 'langkah.samples.v1',
 };
 
 export const ROUTES = {

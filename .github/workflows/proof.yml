@@ -1,0 +1,57 @@
+name: Proof
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: proof-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CAPTURE_ADMIN_SECRET: ci-not-a-real-secret
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Install Playwright
+        working-directory: verify
+        run: npm install && npx playwright install --with-deps chromium
+
+      - name: Start the built app
+        run: |
+          npx next start -p 4173 -H 127.0.0.1 &
+          for i in $(seq 1 45); do
+            if curl -sf http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "next start did not become ready on :4173"
+          exit 1
+
+      - name: Run the verification harness
+        working-directory: verify
+        run: node verify.mjs --base-url http://127.0.0.1:4173 --out ../verify-out --quiet
+
+      - name: Upload the harness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-report
+          path: verify-out
+          if-no-files-found: ignore

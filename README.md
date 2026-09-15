@@ -87,3 +87,26 @@ The JSON is the source of truth. The readable list above it is just for scanning
 The number on each eligible row is a transparent sum of four fixed weights: field alignment (0–35), CGPA headroom (0–20), location fit (0–25) and sector interest (0–20). It is not a forecast of whether anyone will be hired. Expand any score to read the four sentences that produced it.
 
 The working name is in `lib/config.ts`.
+
+## Tests
+
+```bash
+npm test          # Vitest: eligibility, fit, windows, catalog, capture sanitise
+npm run typecheck
+```
+
+The Playwright harness still lives in `verify/`. It talks to a running build, not to `next dev`:
+
+```bash
+npm run build && npm start -- -p 4173
+# in another terminal
+cd verify && npm install && npx playwright install chromium
+node verify.mjs --base-url http://127.0.0.1:4173 --out ../verify-out
+```
+
+GitHub Actions runs typecheck, unit tests, a production build, and the harness on every pull request. Opening a PR is also what gives you a Vercel preview URL.
+
+## Sentry
+
+Set `SENTRY_DSN` on Vercel (Production and Preview) when you want API failures on `/api/waitlist`, `/api/events`, and `/api/capture` to show up in Sentry. Without it, those routes still return JSON errors and log to the host. We do not send email or CGPA to Sentry.
+

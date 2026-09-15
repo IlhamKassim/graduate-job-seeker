@@ -25,6 +25,8 @@ import {
   submitProfile,
   waitForShortlist,
   readShortlistRows,
+  readIneligibleRows,
+  openIneligibleSection,
   readFilterChips,
   programRoute,
 } from '../lib/ui.mjs';
@@ -554,12 +556,35 @@ export const stateChecks = [
       const address = 'pilot.tester@example.com';
       await setField(page, TESTID.emailInput, address);
       await submit.click();
-      await page.waitForTimeout(400);
+      await page.waitForTimeout(350);
 
-      t.expect(await exists(page, TESTID.emailDone), 'a valid email did not produce a done state', {
+      t.expect(!(await exists(page, TESTID.emailDone)), 'a valid email was accepted without consent', {
+        selector: tid(TESTID.emailDone),
+        observed: 'present after submitting without ticking consent',
+        expected: 'absent until the consent box is ticked',
+      });
+      const consentErrors = await readVisibleErrors(page, TESTID);
+      t.expect(consentErrors.length >= 1, 'submitting without consent produced no inline error', {
+        selector: tid(TESTID.emailConsent),
+        observed: 'no visible error',
+        expected: 'a visible in-page error asking to tick the consent box',
+      });
+
+      const consent = await setField(page, TESTID.emailConsent, true);
+      t.require(consent.ok, 'selector not found', {
+        selector: tid(TESTID.emailConsent),
+        observed: consent.reason,
+      });
+      await submit.click();
+      await loc(page, TESTID.emailDone)
+        .first()
+        .waitFor({ state: 'visible', timeout: 8000 })
+        .catch(() => {});
+
+      t.expect(await exists(page, TESTID.emailDone), 'a valid consented email did not produce a done state', {
         selector: tid(TESTID.emailDone),
         observed: 'absent',
-        expected: 'present after a valid submission',
+        expected: 'present after a valid submission with consent',
       });
 
       const stored = await page.evaluate(probeStorage, 'langkah.waitlist.v1');
@@ -798,6 +823,53 @@ export const stateChecks = [
           expected: `${discovery.totalPrograms}`,
         });
       }
+    },
+  },
+
+  {
+    id: 'B11',
+    group: 'B',
+    title: 'The default shortlist hides sample programmes until they are asked for',
+    async run(t) {
+      const session = await t.session({
+        profile: PROFILE_MAIN,
+        events: [],
+        waitlist: [],
+        samples: false,
+      });
+      await t.open(session, ROUTES.shortlist);
+      const page = session.page;
+      await openIneligibleSection(page).catch(() => {});
+
+      const hiddenCount =
+        (await readShortlistRows(page)).length + (await readIneligibleRows(page)).length;
+      t.expect(hiddenCount >= 1, 'the verified catalogue was empty for the seed profile', {
+        selector: tid(TESTID.shortlistRow),
+        observed: '0 rows with samples off',
+        expected: '>= 1 checked programme',
+      });
+
+      t.require(await exists(page, TESTID.filterSamples), 'selector not found', {
+        selector: tid(TESTID.filterSamples),
+        expected: 'a control that reveals sample programmes',
+      });
+      const label = ((await textOf(page, TESTID.filterSamples)) || '').toLowerCase();
+      t.expect(/show/.test(label), 'the samples control does not offer to show hidden rows', {
+        selector: tid(TESTID.filterSamples),
+        observed: `"${label}"`,
+        expected: 'copy that starts from Show',
+      });
+
+      await loc(page, TESTID.filterSamples).first().click();
+      await page.waitForTimeout(300);
+      await openIneligibleSection(page).catch(() => {});
+      const shownCount =
+        (await readShortlistRows(page)).length + (await readIneligibleRows(page)).length;
+      t.expect(shownCount > hiddenCount, 'turning samples on did not add any rows', {
+        selector: tid(TESTID.filterSamples),
+        observed: `${shownCount} rows after; ${hiddenCount} before`,
+        expected: 'more rows than the verified-only catalogue',
+      });
     },
   },
 ];
