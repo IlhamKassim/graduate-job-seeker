@@ -577,52 +577,6 @@ const SAMPLES: SampleDraft[] = [
 
   // --- Consulting ----------------------------------------------------------
   {
-    id: 'accenture-graduate-programme',
-    name: 'Graduate Programme',
-    employer: 'Accenture',
-    sector: 'consulting',
-    cities: ['Kuala Lumpur', 'Penang'],
-    country: 'MY',
-    opensMonth: 9,
-    closesMonth: 11,
-    minCGPA: 3.0,
-    degreeFields: [
-      'Business Administration',
-      'Computer Science',
-      'Data Science',
-      'Economics',
-      'Finance',
-      'Information Systems',
-      'Mathematics',
-      'Software Engineering',
-      'Statistics',
-      'Supply Chain Management',
-    ],
-    citizenshipRequired: 'any',
-    visaSponsored: true,
-    stages: [
-      {
-        stage: 'online_application',
-        note: 'A form, CV and transcript against a named capability area. The area you pick decides who reads it, so pick one rather than all of them.',
-      },
-      {
-        stage: 'aptitude_test',
-        note: 'Online reasoning plus a situational judgement section. The situational part is about how you would handle a client, not about solving a puzzle.',
-      },
-      {
-        stage: 'assessment_centre',
-        note: 'A group case on a client problem plus a short individual presentation. Consulting assessors want structure — say what you are going to do, then do it.',
-      },
-      {
-        stage: 'final_interview',
-        note: 'A case interview with a manager, worked live. Talk through your assumptions out loud; the route you took matters more than the number you land on.',
-      },
-    ],
-    typicalProcessWeeks: 6,
-    sourceUrl: 'https://www.accenture.com/my-en/careers',
-    dataConfidence: 'unverified',
-  },
-  {
     id: 'deloitte-graduate-programme',
     name: 'Graduate Programme',
     employer: 'Deloitte',
@@ -1220,55 +1174,6 @@ const SAMPLES: SampleDraft[] = [
   },
 
   // --- Government ----------------------------------------------------------
-  {
-    id: 'bank-negara-malaysia-graduate-programme',
-    name: 'Graduate Programme',
-    employer: 'Bank Negara Malaysia',
-    sector: 'government',
-    cities: ['Kuala Lumpur'],
-    country: 'MY',
-    opensMonth: 3,
-    closesMonth: 5,
-    minCGPA: 3.5,
-    degreeFields: [
-      'Accounting',
-      'Actuarial Science',
-      'Computer Science',
-      'Data Science',
-      'Economics',
-      'Finance',
-      'Law',
-      'Mathematics',
-      'Statistics',
-    ],
-    citizenshipRequired: 'MY',
-    visaSponsored: false,
-    stages: [
-      {
-        stage: 'online_application',
-        note: 'A detailed form with your transcript. Central bank applications close on a fixed date with no extensions, and academic records are weighted heavily.',
-      },
-      {
-        stage: 'aptitude_test',
-        note: 'Written and online assessments covering reasoning, English and general economic awareness. The economics component surprises non-economics applicants.',
-      },
-      {
-        stage: 'technical_test',
-        note: 'A written paper or essay on a policy or economic topic. You are being read for the quality of your argument, not for arriving at a right answer.',
-      },
-      {
-        stage: 'panel_interview',
-        note: 'A panel of senior officers on your paper, your degree and a current policy question. Formal, and noticeably slower-paced than a commercial interview.',
-      },
-      {
-        stage: 'final_interview',
-        note: 'A final panel covering public service motivation and any bond or service commitment attached to the role. Read those terms before you get this far.',
-      },
-    ],
-    typicalProcessWeeks: 16,
-    sourceUrl: 'https://www.bnm.gov.my/careers',
-    dataConfidence: 'unverified',
-  },
   {
     id: 'monetary-authority-of-singapore-graduate-programme',
     name: 'Graduate Programme',

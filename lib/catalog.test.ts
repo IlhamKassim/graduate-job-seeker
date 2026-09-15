@@ -23,7 +23,7 @@ describe('catalog', () => {
     expect(VERIFIED_PROGRAMS_IN_CATALOG.every((program) => program.checkedOn)).toBe(true);
     expect(VERIFIED_PROGRAMS_IN_CATALOG.every((program) => program.country === 'MY')).toBe(true);
     expect(SAMPLE_PROGRAMS_IN_CATALOG.every((program) => program.checkedOn === null)).toBe(true);
-    expect(VERIFIED_COUNT).toBe(11);
+    expect(VERIFIED_COUNT).toBe(13);
     const rhb = VERIFIED_PROGRAMS_IN_CATALOG.find(
       (program) => program.id === 'rhb-banking-group-graduate-programme',
     );
@@ -31,5 +31,17 @@ describe('catalog', () => {
     expect(rhb?.closesOn).toBe('2026-09-30');
     expect(rhb?.minCGPA).toBe(3.6);
     expect(SAMPLE_PROGRAMS_IN_CATALOG.some((program) => program.id === rhb?.id)).toBe(false);
+    const bnm = VERIFIED_PROGRAMS_IN_CATALOG.find(
+      (program) => program.id === 'bank-negara-malaysia-graduate-programme',
+    );
+    expect(bnm?.name).toBe('Kijang Graduate Programme');
+    expect(bnm?.closesOn).toBe('2026-08-16');
+    expect(bnm?.minCGPA).toBe(3.5);
+    const accenture = VERIFIED_PROGRAMS_IN_CATALOG.find(
+      (program) => program.id === 'accenture-graduate-programme',
+    );
+    expect(accenture?.name).toBe('Talent Advancement Program');
+    expect(accenture?.applicationCycle).toBe('rolling');
+    expect(accenture?.minCGPA).toBeNull();
   });
 });
